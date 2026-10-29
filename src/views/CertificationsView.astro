@@ -1,0 +1,263 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PageHero from '../components/PageHero.astro';
+import Icon from '../components/Icon.astro';
+import CtaBand from '../components/CtaBand.astro';
+import { path, routes, type Lang } from '../i18n/routes';
+import { t } from '../i18n/ui';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const ui = t(lang);
+const fr = lang === 'fr';
+
+const certs = fr
+  ? [
+      {
+        logo: '/brand/certs/cepa-certified.webp',
+        alt: 'CEPA Certified',
+        title: 'CEPA Certified',
+        text: 'Le label de la Confederation of European Pest Management Associations distingue les entreprises de lutte antiparasitaire certifiées selon la norme européenne NF EN 16636 : professionnelles, durables et fiables.',
+      },
+      {
+        logo: '/brand/certs/en16636-bureau-veritas.webp',
+        alt: 'EN 16636 — Bureau Veritas Certification',
+        title: 'NF EN 16636 — Bureau Veritas',
+        text: 'Notre conformité à la norme NF EN 16636 « Services de gestion des nuisibles » est vérifiée par audit indépendant de Bureau Veritas Certification : évaluation des risques, méthodes, sécurité, traçabilité et compétences.',
+      },
+      {
+        logo: '/brand/certs/prosane-80-ans.webp',
+        alt: 'Prosane',
+        title: 'Membre de Prosane',
+        text: 'MSPH est adhérente de Prosane, l’organisation professionnelle des acteurs de l’hygiène et de la lutte antiparasitaire, qui promeut les bonnes pratiques et la professionnalisation du métier.',
+      },
+    ]
+  : [
+      {
+        logo: '/brand/certs/cepa-certified.webp',
+        alt: 'CEPA Certified',
+        title: 'CEPA Certified',
+        text: 'The Confederation of European Pest Management Associations label recognises pest management companies certified to the European standard EN 16636: professional, sustainable and reliable.',
+      },
+      {
+        logo: '/brand/certs/en16636-bureau-veritas.webp',
+        alt: 'EN 16636 — Bureau Veritas Certification',
+        title: 'EN 16636 — Bureau Veritas',
+        text: 'Our compliance with EN 16636 “Pest management services” is verified by an independent Bureau Veritas Certification audit: risk assessment, methods, safety, traceability and skills.',
+      },
+      {
+        logo: '/brand/certs/prosane-80-ans.webp',
+        alt: 'Prosane',
+        title: 'Prosane member',
+        text: 'MSPH is a member of Prosane, the professional organisation for hygiene and pest management companies, which promotes good practice and professional standards.',
+      },
+    ];
+
+const norm = fr
+  ? [
+      'Évaluation préalable des risques et diagnostic documenté',
+      'Choix des méthodes selon les principes de la lutte intégrée',
+      'Protection des personnes, des animaux non cibles et de l’environnement',
+      'Compétences et formation continue des techniciens',
+      'Traçabilité complète et rapports remis au client',
+      'Évaluation de l’efficacité et amélioration continue',
+    ]
+  : [
+      'Prior risk assessment and documented diagnosis',
+      'Choice of methods based on integrated pest management principles',
+      'Protection of people, non-target animals and the environment',
+      'Technician skills and ongoing training',
+      'Full traceability and reports provided to the client',
+      'Effectiveness assessment and continuous improvement',
+    ];
+
+const commitments = fr
+  ? [
+      { icon: 'BadgeCheck', title: 'Certibiocide', text: 'Nos applicateurs détiennent le certificat individuel Certibiocide et l’entreprise dispose de l’agrément requis pour l’application de produits biocides.' },
+      { icon: 'ShieldCheck', title: 'Assurance RC professionnelle', text: 'Toutes nos interventions sont couvertes par une assurance responsabilité civile professionnelle. Attestation sur demande.' },
+      { icon: 'Leaf', title: 'Environnement', text: 'Lutte raisonnée, réduction des biocides, produits homologués et collecte des déchets dangereux via des filières agréées.' },
+      { icon: 'HardHat', title: 'Sécurité', text: 'Équipements de protection individuelle, procédures de sécurité et habilitations à jour pour chaque technicien.' },
+      { icon: 'GraduationCap', title: 'Formation continue', text: 'Mise à jour régulière des compétences : nouvelles espèces invasives, résistances, réglementation.' },
+      { icon: 'FileCheck', title: 'Transparence documentaire', text: 'Fiches techniques, FDS, rapports et certificats disponibles à tout moment pour nos clients.' },
+    ]
+  : [
+      { icon: 'BadgeCheck', title: 'Certibiocide', text: 'Our applicators hold the individual Certibiocide certificate and the company holds the approval required to apply biocides.' },
+      { icon: 'ShieldCheck', title: 'Professional liability insurance', text: 'All our work is covered by professional liability insurance. Certificate available on request.' },
+      { icon: 'Leaf', title: 'Environment', text: 'Responsible pest management, reduced biocide use, approved products and hazardous waste collection through approved channels.' },
+      { icon: 'HardHat', title: 'Safety', text: 'Personal protective equipment, safety procedures and up-to-date qualifications for every technician.' },
+      { icon: 'GraduationCap', title: 'Ongoing training', text: 'Regular skills updates: new invasive species, resistance, regulations.' },
+      { icon: 'FileCheck', title: 'Document transparency', text: 'Technical sheets, safety data sheets, reports and certificates available to our clients at any time.' },
+    ];
+---
+
+<BaseLayout
+  lang={lang}
+  title={fr ? 'Certifications & engagements — CEPA, NF EN 16636, Certibiocide | MSPH' : 'Certifications & commitments — CEPA, EN 16636, Certibiocide | MSPH'}
+  description={fr
+    ? 'MSPH est certifiée CEPA selon la norme européenne NF EN 16636 par Bureau Veritas, membre de Prosane, avec des techniciens Certibiocide. Découvrez nos engagements qualité, sécurité et environnement.'
+    : 'MSPH is CEPA certified to the European standard EN 16636 by Bureau Veritas, a Prosane member, with Certibiocide-certified technicians. Discover our quality, safety and environmental commitments.'}
+  alternates={routes.certifications}
+>
+  <PageHero
+    lang={lang}
+    eyebrow={ui.nav.certifications}
+    title={fr ? 'Une qualité certifiée selon le standard européen' : 'Quality certified to the European standard'}
+    lead={fr
+      ? 'Nos certifications sont la garantie d’un service professionnel, sûr et responsable, contrôlé par des organismes indépendants.'
+      : 'Our certifications guarantee a professional, safe and responsible service, verified by independent bodies.'}
+    crumbs={[{ label: ui.nav.about, href: path('about', lang) }, { label: ui.nav.certifications }]}
+  />
+
+  <section class="section">
+    <div class="container">
+      <div class="grid grid--3">
+        {
+          certs.map((c, i) => (
+            <article class="cert" data-reveal style={`transition-delay:${i * 80}ms`}>
+              <div class="cert__logo">
+                <img src={c.logo} alt={c.alt} loading="lazy" />
+              </div>
+              <h2 class="cert__title">{c.title}</h2>
+              <p>{c.text}</p>
+            </article>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <section class="section section--alt">
+    <div class="container split">
+      <div data-reveal>
+        <p class="eyebrow">{fr ? 'La norme NF EN 16636' : 'The EN 16636 standard'}</p>
+        <h2>{fr ? 'Ce que garantit la norme européenne' : 'What the European standard guarantees'}</h2>
+        <p class="lead">
+          {
+            fr
+              ? 'La norme NF EN 16636 définit les exigences et compétences des prestataires de gestion des nuisibles. Elle protège les clients, la santé publique et l’environnement.'
+              : 'EN 16636 defines the requirements and skills expected of pest management providers. It protects clients, public health and the environment.'
+          }
+        </p>
+      </div>
+      <ul class="norm" role="list" data-reveal>
+        {
+          norm.map((n, i) => (
+            <li>
+              <span class="norm__num">{i + 1}</span>
+              {n}
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="section-head section-head--center">
+        <p class="eyebrow">{fr ? 'Nos engagements' : 'Our commitments'}</p>
+        <h2>{fr ? 'Qualité, sécurité, environnement' : 'Quality, safety, environment'}</h2>
+      </div>
+      <div class="grid grid--3">
+        {
+          commitments.map((c, i) => (
+            <div class="commit" data-reveal style={`transition-delay:${(i % 3) * 70}ms`}>
+              <span class="icon-badge icon-badge--green">
+                <Icon name={c.icon as 'Leaf'} />
+              </span>
+              <h3>{c.title}</h3>
+              <p>{c.text}</p>
+            </div>
+          ))
+        }
+      </div>
+      <div style="margin-top:3rem">
+        <CtaBand
+          lang={lang}
+          title={fr ? 'Besoin de nos certificats pour un appel d’offres ?' : 'Need our certificates for a tender?'}
+          text={fr ? 'Certificat CEPA, attestations Certibiocide, assurance, Kbis : nous vous transmettons le dossier complet.' : 'CEPA certificate, Certibiocide certificates, insurance, company registration: we’ll send you the complete file.'}
+          primaryLabel={ui.cta.contactUs}
+          primaryHref={path('contact', lang)}
+        />
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .cert {
+    display: flex;
+    flex-direction: column;
+    padding: 2rem;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    background: #fff;
+    box-shadow: var(--shadow-sm);
+  }
+  .cert__logo {
+    display: grid;
+    place-items: center;
+    height: 140px;
+    margin-bottom: 1.5rem;
+    border-radius: var(--radius);
+    background: var(--paper-alt);
+  }
+  .cert__logo img {
+    max-height: 96px;
+    width: auto;
+  }
+  .cert__title {
+    font-size: var(--fs-xl);
+  }
+  .cert p {
+    margin: 0;
+    color: var(--ink-600);
+    font-size: var(--fs-sm);
+  }
+  .norm {
+    display: grid;
+    gap: 0.75rem;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .norm li {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem 1.25rem;
+    border-radius: var(--radius);
+    background: #fff;
+    border: 1px solid var(--color-border);
+    font-weight: 500;
+  }
+  .norm__num {
+    display: grid;
+    place-items: center;
+    flex: none;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: var(--blue-700);
+    color: #fff;
+    font-family: var(--font-display);
+    font-weight: 800;
+  }
+  .commit {
+    padding: 1.75rem;
+    border-radius: var(--radius-lg);
+    background: var(--paper-alt);
+  }
+  .commit h3 {
+    font-size: 1.15rem;
+    margin: 1rem 0 0.4rem;
+  }
+  .commit p {
+    margin: 0;
+    font-size: var(--fs-sm);
+    color: var(--ink-600);
+  }
+</style>

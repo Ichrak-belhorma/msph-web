@@ -1,0 +1,83 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PageHero from '../components/PageHero.astro';
+import { site } from '../config/site';
+import { routes, type Lang } from '../i18n/routes';
+import { t } from '../i18n/ui';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const ui = t(lang);
+const fr = lang === 'fr';
+const updated = new Date().toLocaleDateString(fr ? 'fr-FR' : 'en-GB', { month: 'long', year: 'numeric' });
+---
+
+<BaseLayout lang={lang} title={fr ? 'Politique de confidentialité | MSPH' : 'Privacy policy | MSPH'} description={fr ? 'Politique de confidentialité et de protection des données personnelles du site MSPH — MS Pro Hygiène.' : 'Privacy and personal data protection policy for the MSPH — MS Pro Hygiène website.'} alternates={routes.privacy} noindex>
+  <PageHero lang={lang} title={fr ? 'Politique de confidentialité' : 'Privacy policy'} crumbs={[{ label: ui.footer.privacy }]} lead={`${ui.common.updated} ${updated}`} />
+  <section class="section">
+    <div class="container container--narrow prose">
+      {
+        fr ? (
+          <>
+            <p>{site.legalName} attache une grande importance à la protection de vos données personnelles. Cette politique vous explique quelles données nous collectons, pourquoi et comment vous pouvez exercer vos droits, conformément au Règlement général sur la protection des données (RGPD) et à la loi Informatique et Libertés.</p>
+            <h2>1. Responsable du traitement</h2>
+            <p>{site.legalName} — {site.address.street}, {site.address.postalCode} {site.address.city}. Contact : <a href={`mailto:${site.contact.email}`}>{site.contact.email}</a>.</p>
+            <h2>2. Données collectées</h2>
+            <p>Lorsque vous utilisez nos formulaires (diagnostic gratuit, devis, contact), nous collectons : nom et prénom, société, téléphone, e-mail, code postal et ville, type de site, nuisible concerné et le contenu de votre message. Les champs obligatoires sont signalés par un astérisque.</p>
+            <h2>3. Finalités et bases légales</h2>
+            <ul>
+              <li>Répondre à vos demandes de diagnostic, de devis ou d’information — <em>mesures précontractuelles prises à votre demande</em> ;</li>
+              <li>Exécuter et suivre nos prestations — <em>exécution du contrat</em> ;</li>
+              <li>Respecter nos obligations légales (facturation, traçabilité des biocides) — <em>obligation légale</em>.</li>
+            </ul>
+            <p>Nous n’utilisons pas vos données à des fins de prospection commerciale sans votre consentement et ne les revendons jamais.</p>
+            <h2>4. Durées de conservation</h2>
+            <ul>
+              <li>Demandes sans suite : 3 ans à compter du dernier contact ;</li>
+              <li>Données clients : durée de la relation contractuelle, puis archivage selon les délais légaux (10 ans pour les pièces comptables).</li>
+            </ul>
+            <h2>5. Destinataires</h2>
+            <p>Vos données sont destinées exclusivement aux équipes de {site.legalName}. Elles peuvent être transmises à nos sous-traitants techniques (hébergement du site, service d’envoi des formulaires, messagerie) qui agissent sur nos instructions et présentent des garanties suffisantes. Si un sous-traitant est situé hors de l’Union européenne, le transfert est encadré par des clauses contractuelles types de la Commission européenne.</p>
+            <h2>6. Cookies et traceurs</h2>
+            <p>Ce site n’utilise aucun cookie publicitaire ni de mesure d’audience. Seuls des éléments strictement nécessaires à son fonctionnement peuvent être déposés, ce qui ne requiert pas votre consentement. Certaines images peuvent être chargées depuis un service tiers (Pexels), qui reçoit alors techniquement votre adresse IP.</p>
+            <h2>7. Vos droits</h2>
+            <p>Vous disposez d’un droit d’accès, de rectification, d’effacement, de limitation, d’opposition et de portabilité de vos données, ainsi que du droit de définir des directives relatives à leur sort après votre décès. Pour les exercer, écrivez-nous à <a href={`mailto:${site.contact.email}`}>{site.contact.email}</a>. Vous pouvez également introduire une réclamation auprès de la CNIL (<a href="https://www.cnil.fr" rel="noopener" target="_blank">www.cnil.fr</a>).</p>
+            <h2>8. Sécurité</h2>
+            <p>Nous mettons en œuvre des mesures techniques et organisationnelles appropriées pour protéger vos données contre tout accès non autorisé, perte ou divulgation (connexion chiffrée HTTPS, accès restreint).</p>
+          </>
+        ) : (
+          <>
+            <p>{site.legalName} takes the protection of your personal data seriously. This policy explains what data we collect, why, and how you can exercise your rights, in accordance with the General Data Protection Regulation (GDPR) and French data protection law.</p>
+            <h2>1. Data controller</h2>
+            <p>{site.legalName} — {site.address.street}, {site.address.postalCode} {site.address.city}, France. Contact: <a href={`mailto:${site.contact.email}`}>{site.contact.email}</a>.</p>
+            <h2>2. Data collected</h2>
+            <p>When you use our forms (free assessment, quote, contact), we collect: full name, company, phone, email, postcode and city, type of premises, pest concerned and the content of your message. Required fields are marked with an asterisk.</p>
+            <h2>3. Purposes and legal bases</h2>
+            <ul>
+              <li>Responding to your assessment, quote or information requests — <em>pre-contractual measures at your request</em>;</li>
+              <li>Performing and following up our services — <em>performance of a contract</em>;</li>
+              <li>Meeting our legal obligations (invoicing, biocide traceability) — <em>legal obligation</em>.</li>
+            </ul>
+            <p>We do not use your data for marketing without your consent and never sell it.</p>
+            <h2>4. Retention periods</h2>
+            <ul>
+              <li>Requests not followed up: 3 years from last contact;</li>
+              <li>Client data: duration of the contractual relationship, then archived for the legal periods (10 years for accounting records).</li>
+            </ul>
+            <h2>5. Recipients</h2>
+            <p>Your data is intended solely for {site.legalName} staff. It may be shared with our technical processors (website hosting, form delivery service, email) acting on our instructions with sufficient guarantees. Any transfer outside the European Union is covered by European Commission standard contractual clauses.</p>
+            <h2>6. Cookies and trackers</h2>
+            <p>This website uses no advertising or analytics cookies. Only elements strictly necessary for its operation may be stored, which does not require your consent. Some images may be loaded from a third-party service (Pexels), which technically receives your IP address.</p>
+            <h2>7. Your rights</h2>
+            <p>You have the right to access, rectify, erase, restrict, object to and port your data. To exercise these rights, email us at <a href={`mailto:${site.contact.email}`}>{site.contact.email}</a>. You may also lodge a complaint with the French data protection authority, the CNIL (<a href="https://www.cnil.fr" rel="noopener" target="_blank">www.cnil.fr</a>).</p>
+            <h2>8. Security</h2>
+            <p>We implement appropriate technical and organisational measures to protect your data against unauthorised access, loss or disclosure (HTTPS encryption, restricted access).</p>
+          </>
+        )
+      }
+    </div>
+  </section>
+</BaseLayout>

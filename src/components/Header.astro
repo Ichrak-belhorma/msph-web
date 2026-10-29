@@ -1,0 +1,708 @@
+---
+import Logo from './Logo.astro';
+import Icon from './Icon.astro';
+import LangSwitch from './LangSwitch.astro';
+import { site } from '../config/site';
+import { services } from '../data/services';
+import { sectors } from '../data/sectors';
+import { path, type Lang } from '../i18n/routes';
+import { t } from '../i18n/ui';
+
+interface Props {
+  lang: Lang;
+  alternates: Record<Lang, string>;
+}
+
+const { lang, alternates } = Astro.props;
+const ui = t(lang);
+const current = Astro.url.pathname;
+const isActive = (href: string) => (href === path('home', lang) ? current === href : current.startsWith(href));
+const tel = `tel:${site.contact.phoneIntl}`;
+
+const aboutLinks = [
+  { href: path('about', lang), label: ui.nav.aboutUs, icon: 'Users' as const },
+  { href: path('certifications', lang), label: ui.nav.certifications, icon: 'Award' as const },
+  { href: path('careers', lang), label: ui.nav.careers, icon: 'GraduationCap' as const },
+  { href: path('faq', lang), label: ui.nav.faq, icon: 'MessageCircle' as const },
+];
+---
+
+<div class="topbar">
+  <div class="container container--header topbar__inner">
+    <ul class="topbar__list" role="list">
+      <li><Icon name="BadgeCheck" size={16} /> {ui.topbar.certified}</li>
+      <li class="topbar__hide-sm"><Icon name="Timer" size={16} /> {ui.topbar.fast}</li>
+    </ul>
+    <div class="topbar__right">
+      <a href={`mailto:${site.contact.email}`} class="topbar__link"><Icon name="Mail" size={16} /> {site.contact.email}</a>
+      <LangSwitch lang={lang} alternates={alternates} variant="dark" />
+    </div>
+  </div>
+</div>
+
+<header class="site-header" data-header>
+  <div class="container container--header site-header__inner">
+    <a href={path('home', lang)} class="site-header__brand" aria-label={`${site.name} — ${site.brand}, ${ui.common.home}`}>
+      <Logo tagline={lang === 'fr' ? 'Lutte antiparasitaire & hygiène' : 'Pest control & hygiene'} />
+    </a>
+
+    <nav class="nav" aria-label={lang === 'fr' ? 'Navigation principale' : 'Main navigation'}>
+      <ul class="nav__list" role="list">
+        <li class="nav__item" data-dropdown>
+          <button class:list={['nav__link', { 'is-active': current.includes('/services/') }]} aria-expanded="false" aria-controls="dd-services">
+            {ui.nav.services}<Icon name="ChevronDown" size={16} class="nav__chev" />
+          </button>
+          <div class="dropdown dropdown--mega" id="dd-services">
+            <div class="mega">
+              <ul class="mega__grid" role="list">
+                {
+                  services.map((s) => (
+                    <li>
+                      <a href={path(s.key, lang)} class="mega__item">
+                        <span class="icon-badge">
+                          <Icon name={s.icon} />
+                        </span>
+                        <span>
+                          <strong>{s[lang].menuLabel}</strong>
+                          <small>{s[lang].short}</small>
+                        </span>
+                      </a>
+                    </li>
+                  ))
+                }
+              </ul>
+              <aside class="mega__aside">
+                <p class="mega__aside-title">{lang === 'fr' ? 'Une infestation ?' : 'An infestation?'}</p>
+                <p>{lang === 'fr' ? 'Nos techniciens interviennent sous 24 h, 7j/7 pour les urgences.' : 'Our technicians respond within 24 h, 7 days a week for emergencies.'}</p>
+                <a href={tel} class="btn btn--white btn--block"><Icon name="Phone" />{site.contact.phone}</a>
+                <a href={path('services', lang)} class="link-arrow mega__all">{ui.nav.allServices}<Icon name="ArrowRight" /></a>
+              </aside>
+            </div>
+          </div>
+        </li>
+
+        <li class="nav__item" data-dropdown>
+          <button class:list={['nav__link', { 'is-active': isActive(path('business', lang)) || isActive(path('sectors', lang)) }]} aria-expanded="false" aria-controls="dd-business">
+            {ui.nav.business}<Icon name="ChevronDown" size={16} class="nav__chev" />
+          </button>
+          <div class="dropdown dropdown--wide" id="dd-business">
+            <div class="dd-business">
+              <div class="dd-business__main">
+                <a href={path('business', lang)} class="mega__item">
+                  <span class="icon-badge icon-badge--green"><Icon name="Handshake" /></span>
+                  <span><strong>{ui.nav.businessContracts}</strong><small>{ui.nav.businessContractsDesc}</small></span>
+                </a>
+                <a href={path('sectors', lang)} class="mega__item">
+                  <span class="icon-badge"><Icon name="LayoutGrid" /></span>
+                  <span><strong>{ui.nav.sectors}</strong><small>{ui.nav.sectorsDesc}</small></span>
+                </a>
+                <a href={path('quote', lang)} class="btn btn--cta btn--block">{ui.cta.audit}</a>
+              </div>
+              <ul class="dd-business__sectors" role="list">
+                {
+                  sectors.map((s) => (
+                    <li>
+                      <a href={`${path('sectors', lang)}#${s.id}`}>
+                        <Icon name={s.icon} size={18} />
+                        {s[lang].title}
+                      </a>
+                    </li>
+                  ))
+                }
+              </ul>
+            </div>
+          </div>
+        </li>
+
+        <li class="nav__item">
+          <a href={path('residential', lang)} class:list={['nav__link', { 'is-active': isActive(path('residential', lang)) }]}>{ui.nav.residential}</a>
+        </li>
+
+        <li class="nav__item" data-dropdown>
+          <button class:list={['nav__link', { 'is-active': aboutLinks.some((l) => isActive(l.href)) }]} aria-expanded="false" aria-controls="dd-about">
+            {ui.nav.about}<Icon name="ChevronDown" size={16} class="nav__chev" />
+          </button>
+          <div class="dropdown" id="dd-about">
+            <ul class="dd-list" role="list">
+              {
+                aboutLinks.map((l) => (
+                  <li>
+                    <a href={l.href}>
+                      <Icon name={l.icon} size={18} />
+                      {l.label}
+                    </a>
+                  </li>
+                ))
+              }
+            </ul>
+          </div>
+        </li>
+
+        <li class="nav__item">
+          <a href={path('blog', lang)} class:list={['nav__link', { 'is-active': isActive(path('blog', lang)) }]}>{ui.nav.blog}</a>
+        </li>
+        <li class="nav__item">
+          <a href={path('contact', lang)} class:list={['nav__link', { 'is-active': isActive(path('contact', lang)) }]}>{ui.nav.contact}</a>
+        </li>
+      </ul>
+    </nav>
+
+    <div class="site-header__actions">
+      <a href={tel} class="header-phone">
+        <span class="header-phone__icon"><Icon name="PhoneCall" size={20} /></span>
+        <span class="header-phone__text">
+          <small>{lang === 'fr' ? 'Urgence 7j/7' : 'Emergency 24/7'}</small>
+          <strong>{site.contact.phone}</strong>
+        </span>
+      </a>
+      <a href={path('quote', lang)} class="btn btn--cta header-cta">{ui.cta.quote}</a>
+      <button class="burger" aria-expanded="false" aria-controls="mobile-nav" data-burger>
+        <span class="sr-only">{ui.nav.menu}</span>
+        <span class="burger__bars" aria-hidden="true"><span></span><span></span><span></span></span>
+      </button>
+    </div>
+  </div>
+
+</header>
+
+<div class="mobile-nav" id="mobile-nav" data-mobile-nav hidden>
+  <nav class="container mobile-nav__inner" aria-label={lang === 'fr' ? 'Navigation mobile' : 'Mobile navigation'}>
+    <details class="mnav-group" open>
+      <summary>{ui.nav.services}<Icon name="ChevronDown" size={18} /></summary>
+      <ul role="list">
+        {
+          services.map((s) => (
+            <li>
+              <a href={path(s.key, lang)}>
+                <Icon name={s.icon} size={20} />
+                {s[lang].menuLabel}
+              </a>
+            </li>
+          ))
+        }
+        <li><a href={path('services', lang)} class="mnav-all">{ui.nav.allServices} →</a></li>
+      </ul>
+    </details>
+    <details class="mnav-group">
+      <summary>{ui.nav.business}<Icon name="ChevronDown" size={18} /></summary>
+      <ul role="list">
+        <li><a href={path('business', lang)}><Icon name="Handshake" size={20} />{ui.nav.businessContracts}</a></li>
+        <li><a href={path('sectors', lang)}><Icon name="LayoutGrid" size={20} />{ui.nav.sectors}</a></li>
+      </ul>
+    </details>
+    <a class="mnav-link" href={path('residential', lang)}>{ui.nav.residential}</a>
+    <details class="mnav-group">
+      <summary>{ui.nav.about}<Icon name="ChevronDown" size={18} /></summary>
+      <ul role="list">
+        {
+          aboutLinks.map((l) => (
+            <li>
+              <a href={l.href}>
+                <Icon name={l.icon} size={20} />
+                {l.label}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </details>
+    <a class="mnav-link" href={path('blog', lang)}>{ui.nav.blog}</a>
+    <a class="mnav-link" href={path('contact', lang)}>{ui.nav.contact}</a>
+
+    <div class="mobile-nav__cta">
+      <a href={path('quote', lang)} class="btn btn--cta btn--lg btn--block">{ui.cta.quoteLong}</a>
+      <a href={tel} class="btn btn--outline btn--lg btn--block"><Icon name="Phone" />{site.contact.phone}</a>
+      <LangSwitch lang={lang} alternates={alternates} />
+    </div>
+  </nav>
+</div>
+
+<style>
+  /* ---------- Barre supérieure ---------- */
+  .topbar {
+    background: var(--navy-900);
+    color: #c9d6e8;
+    font-size: var(--fs-xs);
+  }
+  .topbar__inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    min-height: 40px;
+  }
+  .topbar__list {
+    display: flex;
+    gap: 1.5rem;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .topbar__list li,
+  .topbar__link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+  }
+  .topbar__list :global(svg) {
+    color: var(--green-400);
+  }
+  .topbar__right {
+    display: flex;
+    align-items: center;
+    gap: 1.25rem;
+  }
+  .topbar__link {
+    color: inherit;
+    text-decoration: none;
+  }
+  .topbar__link:hover {
+    color: #fff;
+  }
+  @media (max-width: 899px) {
+    .topbar {
+      display: none;
+    }
+  }
+
+  /* ---------- En-tête ---------- */
+  .site-header {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: rgb(255 255 255 / 0.96);
+    backdrop-filter: saturate(1.4) blur(10px);
+    border-bottom: 1px solid transparent;
+    transition:
+      box-shadow 0.25s var(--ease),
+      border-color 0.25s var(--ease);
+  }
+  .site-header:global(.is-scrolled) {
+    border-bottom-color: var(--color-border);
+    box-shadow: 0 8px 24px -14px rgb(7 28 61 / 0.25);
+  }
+  .container--header {
+    max-width: 1440px;
+  }
+  .site-header__inner {
+    display: flex;
+    align-items: center;
+    gap: 1.25rem;
+    min-height: var(--header-h);
+  }
+  .site-header__brand {
+    text-decoration: none;
+    flex: none;
+  }
+  .site-header__actions {
+    display: flex;
+    align-items: center;
+    gap: 0.9rem;
+    margin-left: auto;
+  }
+
+  /* ---------- Navigation desktop ---------- */
+  .nav {
+    display: none;
+    margin-left: auto;
+  }
+  .nav__list {
+    display: flex;
+    align-items: center;
+    gap: 0.15rem;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .nav__item {
+    position: relative;
+  }
+  .nav__link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.6rem 0.75rem;
+    font: 600 0.975rem/1 var(--font-sans);
+    color: var(--ink-700);
+    text-decoration: none;
+    background: none;
+    border: 0;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    white-space: nowrap;
+  }
+  .nav__link:hover,
+  .nav__link[aria-expanded='true'] {
+    color: var(--blue-700);
+    background: var(--blue-50);
+  }
+  .nav__link.is-active {
+    color: var(--blue-700);
+  }
+  .nav__link :global(.nav__chev) {
+    transition: transform 0.2s var(--ease);
+  }
+  .nav__link[aria-expanded='true'] :global(.nav__chev) {
+    transform: rotate(180deg);
+  }
+
+  .dropdown {
+    position: absolute;
+    top: calc(100% + 12px);
+    left: 50%;
+    min-width: 280px;
+    padding: 0.75rem;
+    background: #fff;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-lg);
+    opacity: 0;
+    visibility: hidden;
+    transform: translate(-50%, 8px);
+    transition:
+      opacity 0.2s var(--ease),
+      transform 0.2s var(--ease),
+      visibility 0.2s;
+  }
+  .dropdown::before {
+    content: '';
+    position: absolute;
+    inset: -14px 0 auto;
+    height: 14px;
+  }
+  .nav__item:global(.is-open) .dropdown {
+    opacity: 1;
+    visibility: visible;
+    transform: translate(-50%, 0);
+  }
+  .dropdown--mega {
+    width: min(920px, calc(100vw - 3rem));
+    left: 0;
+    transform: translate(-25%, 8px);
+  }
+  .nav__item:global(.is-open) .dropdown--mega {
+    transform: translate(-25%, 0);
+  }
+  .dropdown--wide {
+    width: min(720px, calc(100vw - 3rem));
+  }
+
+  .mega {
+    display: grid;
+    grid-template-columns: 1fr 260px;
+    gap: 0.75rem;
+  }
+  .mega__grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.25rem;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .mega__item {
+    display: flex;
+    gap: 0.85rem;
+    padding: 0.8rem;
+    border-radius: var(--radius-sm);
+    text-decoration: none;
+    color: var(--ink-700);
+    transition: background-color 0.15s;
+  }
+  .mega__item:hover {
+    background: var(--paper-alt);
+    color: var(--ink-700);
+  }
+  .mega__item strong {
+    display: block;
+    font-family: var(--font-display);
+    color: var(--navy-900);
+    font-size: 0.975rem;
+    margin-bottom: 0.15rem;
+  }
+  .mega__item small {
+    display: block;
+    font-size: 0.82rem;
+    line-height: 1.45;
+    color: var(--ink-500);
+  }
+  .mega__item .icon-badge {
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+  }
+  .mega__item .icon-badge :global(svg) {
+    width: 22px;
+    height: 22px;
+  }
+  .mega__aside {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    padding: 1.25rem;
+    border-radius: var(--radius-sm);
+    background: linear-gradient(160deg, var(--navy-800), var(--blue-700));
+    color: #d6e0ee;
+    font-size: 0.9rem;
+  }
+  .mega__aside p {
+    margin: 0;
+  }
+  .mega__aside-title {
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: 1.15rem;
+    color: #fff;
+  }
+  .mega__aside .btn {
+    margin-top: auto;
+  }
+  .mega__all {
+    color: #fff;
+    justify-content: center;
+  }
+  .mega__all:hover {
+    color: var(--green-400);
+  }
+
+  .dd-business {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.75rem;
+  }
+  .dd-business__main {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+  .dd-business__main .btn {
+    margin-top: 0.5rem;
+  }
+  .dd-business__sectors,
+  .dd-list {
+    list-style: none;
+    margin: 0;
+    padding: 0.5rem;
+    background: var(--paper-alt);
+    border-radius: var(--radius-sm);
+  }
+  .dd-list {
+    background: none;
+    padding: 0;
+  }
+  .dd-business__sectors a,
+  .dd-list a {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.55rem 0.65rem;
+    border-radius: 8px;
+    font-size: 0.92rem;
+    font-weight: 500;
+    color: var(--ink-700);
+    text-decoration: none;
+  }
+  .dd-business__sectors a:hover,
+  .dd-list a:hover {
+    background: #fff;
+    color: var(--blue-700);
+  }
+  .dd-list a:hover {
+    background: var(--paper-alt);
+  }
+  .dd-business__sectors :global(svg),
+  .dd-list :global(svg) {
+    color: var(--blue-600);
+    flex: none;
+  }
+
+  /* ---------- Actions ---------- */
+  .header-phone {
+    display: none;
+    align-items: center;
+    gap: 0.6rem;
+    text-decoration: none;
+    color: var(--navy-900);
+  }
+  .header-phone__icon {
+    display: grid;
+    place-items: center;
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    background: var(--green-50);
+    color: var(--green-600);
+  }
+  .header-phone__text {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.15;
+  }
+  .header-phone small {
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: var(--ink-500);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+  .header-phone strong {
+    font-family: var(--font-display);
+    font-size: 1.05rem;
+    white-space: nowrap;
+  }
+  .header-phone:hover strong {
+    color: var(--blue-700);
+  }
+
+  .burger {
+    display: grid;
+    place-items: center;
+    width: 46px;
+    height: 46px;
+    border: 1px solid var(--color-border);
+    border-radius: 12px;
+    background: #fff;
+    cursor: pointer;
+  }
+  .burger__bars {
+    display: grid;
+    gap: 5px;
+    width: 20px;
+  }
+  .burger__bars span {
+    display: block;
+    height: 2px;
+    background: var(--navy-900);
+    border-radius: 2px;
+    transition:
+      transform 0.25s var(--ease),
+      opacity 0.2s;
+  }
+  .burger[aria-expanded='true'] .burger__bars span:nth-child(1) {
+    transform: translateY(7px) rotate(45deg);
+  }
+  .burger[aria-expanded='true'] .burger__bars span:nth-child(2) {
+    opacity: 0;
+  }
+  .burger[aria-expanded='true'] .burger__bars span:nth-child(3) {
+    transform: translateY(-7px) rotate(-45deg);
+  }
+
+  /* ---------- Menu mobile ---------- */
+  .mobile-nav {
+    position: fixed;
+    inset: var(--header-h) 0 0;
+    z-index: 99;
+    overflow-y: auto;
+    background: #fff;
+    border-top: 1px solid var(--color-border);
+  }
+  .mobile-nav__inner {
+    display: flex;
+    flex-direction: column;
+    padding-block: 0.75rem 2rem;
+  }
+  .mnav-group,
+  .mnav-link {
+    border-bottom: 1px solid var(--color-border);
+  }
+  .mnav-group summary,
+  .mnav-link {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem 0.25rem;
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 1.1rem;
+    color: var(--navy-900);
+    text-decoration: none;
+    cursor: pointer;
+    list-style: none;
+  }
+  .mnav-group summary::-webkit-details-marker {
+    display: none;
+  }
+  .mnav-group[open] summary :global(svg) {
+    transform: rotate(180deg);
+  }
+  .mnav-group ul {
+    list-style: none;
+    margin: 0 0 0.75rem;
+    padding: 0;
+  }
+  .mnav-group a {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.7rem 0.5rem;
+    color: var(--ink-700);
+    text-decoration: none;
+    font-weight: 500;
+    border-radius: var(--radius-sm);
+  }
+  .mnav-group a:hover {
+    background: var(--paper-alt);
+  }
+  .mnav-group a :global(svg) {
+    color: var(--blue-600);
+  }
+  .mnav-all {
+    font-weight: 700 !important;
+    color: var(--blue-700) !important;
+  }
+  .mobile-nav__cta {
+    display: grid;
+    gap: 0.75rem;
+    margin-top: 1.5rem;
+  }
+
+  /* ---------- Responsive ---------- */
+  @media (max-width: 599px) {
+    .header-cta {
+      display: none;
+    }
+    .site-header__brand :global(.logo__tagline) {
+      display: none;
+    }
+    .site-header__brand :global(.logo__emblem) {
+      width: 54px;
+    }
+    .site-header__brand :global(.logo__name) {
+      font-size: 0.95rem;
+    }
+  }
+  @media (min-width: 900px) {
+    .header-phone {
+      display: inline-flex;
+    }
+  }
+  @media (min-width: 1200px) {
+    .nav {
+      display: block;
+    }
+    .burger {
+      display: none;
+    }
+    .mobile-nav {
+      display: none !important;
+    }
+    .site-header__brand :global(.logo__tagline) {
+      display: none;
+    }
+  }
+  @media (min-width: 1200px) and (max-width: 1319px) {
+    .header-phone__text {
+      display: none;
+    }
+    .header-phone__icon {
+      width: 46px;
+      height: 46px;
+    }
+  }
+  @media (min-width: 1440px) {
+    .site-header__brand :global(.logo__tagline) {
+      display: block;
+    }
+  }
+</style>

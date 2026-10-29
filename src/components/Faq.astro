@@ -1,0 +1,95 @@
+---
+import Icon from './Icon.astro';
+
+interface Props {
+  items: { q: string; a: string }[];
+  /** Ajoute les données structurées FAQPage. */
+  schema?: boolean;
+}
+
+const { items, schema = false } = Astro.props;
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: items.map((i) => ({ '@type': 'Question', name: i.q, acceptedAnswer: { '@type': 'Answer', text: i.a } })),
+};
+---
+
+<div class="faq">
+  {
+    items.map((item, i) => (
+      <details class="faq__item" open={i === 0}>
+        <summary>
+          <span>{item.q}</span>
+          <span class="faq__icon" aria-hidden="true">
+            <Icon name="Plus" size={20} />
+          </span>
+        </summary>
+        <div class="faq__answer">
+          <p>{item.a}</p>
+        </div>
+      </details>
+    ))
+  }
+</div>
+{schema && <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />}
+
+<style>
+  .faq {
+    display: grid;
+    gap: 0.75rem;
+  }
+  .faq__item {
+    background: #fff;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius);
+    transition:
+      box-shadow 0.2s,
+      border-color 0.2s;
+  }
+  .faq__item[open] {
+    border-color: var(--blue-100);
+    box-shadow: var(--shadow);
+  }
+  .faq__item summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 1.1rem 1.25rem;
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 1.05rem;
+    color: var(--navy-900);
+    cursor: pointer;
+    list-style: none;
+  }
+  .faq__item summary::-webkit-details-marker {
+    display: none;
+  }
+  .faq__icon {
+    display: grid;
+    place-items: center;
+    flex: none;
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    background: var(--blue-50);
+    color: var(--blue-700);
+    transition:
+      transform 0.25s var(--ease),
+      background-color 0.2s;
+  }
+  .faq__item[open] .faq__icon {
+    transform: rotate(45deg);
+    background: var(--green-600);
+    color: #fff;
+  }
+  .faq__answer {
+    padding: 0 1.25rem 1.2rem;
+    color: var(--ink-600);
+  }
+  .faq__answer p {
+    margin: 0;
+  }
+</style>

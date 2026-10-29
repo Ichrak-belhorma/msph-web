@@ -1,0 +1,558 @@
+---
+import Icon from './Icon.astro';
+import { site } from '../config/site';
+import { path, type Lang } from '../i18n/routes';
+import { t } from '../i18n/ui';
+
+interface Props {
+  lang: Lang;
+  variant?: 'hero' | 'quote' | 'contact';
+  id?: string;
+  title?: string;
+  subtitle?: string;
+  defaultPest?: keyof ReturnType<typeof t>['form']['pests'];
+  defaultProfile?: 'pro' | 'home';
+}
+
+const { lang, variant = 'hero', id = `form-${variant}`, title, subtitle, defaultPest, defaultProfile = 'pro' } = Astro.props;
+const f = t(lang).form;
+const isHero = variant === 'hero';
+const isQuote = variant === 'quote';
+const isContact = variant === 'contact';
+const formType = isHero ? (lang === 'fr' ? 'Diagnostic gratuit' : 'Free assessment') : isQuote ? (lang === 'fr' ? 'Demande de devis' : 'Quote request') : lang === 'fr' ? 'Contact' : 'Contact';
+const submitLabel = isHero ? f.submit : isQuote ? f.submitQuote : f.submitContact;
+const pestEntries = Object.entries(f.pests) as [string, string][];
+const siteTypeEntries = Object.entries(f.siteTypes) as [string, string][];
+---
+
+<div class:list={['lead-form', `lead-form--${variant}`]} data-form-wrapper>
+  {
+    (title || isHero) && (
+      <div class="lead-form__head">
+        <div>
+          <p class="lead-form__title">{title ?? f.title}</p>
+          <p class="lead-form__subtitle">{subtitle ?? f.subtitle}</p>
+        </div>
+        {isHero && (
+          <span class="lead-form__badge">
+            <Icon name="Gift" size={16} />
+            {lang === 'fr' ? 'Gratuit' : 'Free'}
+          </span>
+        )}
+      </div>
+    )
+  }
+
+  <form
+    id={id}
+    class="lead-form__form"
+    novalidate
+    data-lead-form
+    data-endpoint={site.form.endpoint}
+    data-email={site.contact.email}
+    data-form-type={formType}
+    data-lang={lang}
+    data-msg-invalid={f.invalid}
+    data-msg-sending={f.sending}
+  >
+    <input type="hidden" name="form_type" value={formType} />
+    <input type="hidden" name="subject" value={`${formType} — ${site.name}`} />
+    <input type="hidden" name="language" value={lang} />
+    <input type="hidden" name="page" value="" data-page-url />
+    {site.form.accessKey && <input type="hidden" name="access_key" value={site.form.accessKey} />}
+    <div class="hp" aria-hidden="true">
+      <label>Website <input type="text" name="website" tabindex="-1" autocomplete="off" /></label>
+    </div>
+
+    {
+      !isContact && (
+        <fieldset class="segmented" data-profile>
+          <legend class="sr-only">{f.profile}</legend>
+          <label class="segmented__opt">
+            <input type="radio" name="profile" value={f.profilePro} checked={defaultProfile === 'pro'} data-profile-pro />
+            <span>
+              <Icon name="Building2" size={18} />
+              {f.profilePro}
+            </span>
+          </label>
+          <label class="segmented__opt">
+            <input type="radio" name="profile" value={f.profileHome} checked={defaultProfile === 'home'} />
+            <span>
+              <Icon name="House" size={18} />
+              {f.profileHome}
+            </span>
+          </label>
+        </fieldset>
+      )
+    }
+
+    <div class="fields">
+      {
+        !isContact && (
+          <div class="field field--full">
+            <label for={`${id}-pest`}>
+              {f.pest} <span class="req">*</span>
+            </label>
+            <div class="select">
+              <select id={`${id}-pest`} name="pest" required data-label={f.pest}>
+                <option value="" disabled selected={!defaultPest}>
+                  {f.pestPlaceholder}
+                </option>
+                {pestEntries.map(([key, label]) => (
+                  <option value={label} selected={defaultPest === key}>
+                    {label}
+                  </option>
+                ))}
+              </select>
+              <Icon name="ChevronDown" size={18} />
+            </div>
+          </div>
+        )
+      }
+
+      <div class="field field--name">
+        <label for={`${id}-name`}>{f.name} <span class="req">*</span></label>
+        <input id={`${id}-name`} name="name" type="text" autocomplete="name" required data-label={f.name} />
+      </div>
+
+      {
+        !isContact && (
+          <div class="field field--company" data-company-field hidden={defaultProfile === 'home'}>
+            <label for={`${id}-company`}>{f.company}</label>
+            <input id={`${id}-company`} name="company" type="text" autocomplete="organization" data-label={f.company} />
+          </div>
+        )
+      }
+
+      <div class:list={['field', { 'field--full': isHero }]}>
+        <label for={`${id}-email`}>{f.email} <span class="req">*</span></label>
+        <input id={`${id}-email`} name="email" type="email" autocomplete="email" required data-label={f.email} />
+      </div>
+
+      <div class="field">
+        <label for={`${id}-phone`}>{f.phone} <span class="req">*</span></label>
+        <input id={`${id}-phone`} name="phone" type="tel" autocomplete="tel" inputmode="tel" required pattern="[0-9 +.\(\)\-]{8,20}" data-label={f.phone} />
+      </div>
+
+      {
+        !isContact && (
+          <div class="field">
+            <label for={`${id}-postal`}>
+              {f.postalCode} <span class="req">*</span>
+            </label>
+            <input id={`${id}-postal`} name="postal_code" type="text" autocomplete="postal-code" inputmode="numeric" required pattern="[0-9]{5}" maxlength="5" data-label={f.postalCode} />
+          </div>
+        )
+      }
+
+      {
+        isQuote && (
+          <>
+            <div class="field">
+              <label for={`${id}-city`}>{f.city}</label>
+              <input id={`${id}-city`} name="city" type="text" autocomplete="address-level2" data-label={f.city} />
+            </div>
+            <div class="field">
+              <label for={`${id}-site`}>{f.siteType}</label>
+              <div class="select">
+                <select id={`${id}-site`} name="site_type" data-label={f.siteType}>
+                  <option value="">{f.pestPlaceholder}</option>
+                  {siteTypeEntries.map(([, label]) => (
+                    <option value={label}>{label}</option>
+                  ))}
+                </select>
+                <Icon name="ChevronDown" size={18} />
+              </div>
+            </div>
+            <div class="field">
+              <label for={`${id}-surface`}>{f.surface}</label>
+              <input id={`${id}-surface`} name="surface" type="text" placeholder={f.surfacePlaceholder} data-label={f.surface} />
+            </div>
+            <div class="field">
+              <label for={`${id}-urgency`}>{f.urgency}</label>
+              <div class="select">
+                <select id={`${id}-urgency`} name="urgency" data-label={f.urgency}>
+                  {Object.values(f.urgencies).map((label) => (
+                    <option value={label}>{label}</option>
+                  ))}
+                </select>
+                <Icon name="ChevronDown" size={18} />
+              </div>
+            </div>
+            <div class="field">
+              <label for={`${id}-callback`}>{f.callback}</label>
+              <div class="select">
+                <select id={`${id}-callback`} name="callback" data-label={f.callback}>
+                  {Object.values(f.callbacks).map((label) => (
+                    <option value={label}>{label}</option>
+                  ))}
+                </select>
+                <Icon name="ChevronDown" size={18} />
+              </div>
+            </div>
+          </>
+        )
+      }
+
+      {
+        !isHero && (
+          <div class="field field--full">
+            <label for={`${id}-message`}>
+              {f.message} {isContact && <span class="req">*</span>}
+            </label>
+            <textarea id={`${id}-message`} name="message" rows="5" placeholder={f.messagePlaceholder} required={isContact} data-label={f.message} />
+          </div>
+        )
+      }
+
+      <div class="field field--full field--consent">
+        <label class="checkbox">
+          <input type="checkbox" name="consent" value="yes" required />
+          <span>
+            {f.consent} <a href={path('privacy', lang)} target="_blank">{f.consentLink}</a>. <span class="req">*</span>
+          </span>
+        </label>
+      </div>
+    </div>
+
+    <p class="form-error" data-form-error hidden role="alert"></p>
+
+    <button type="submit" class="btn btn--cta btn--lg btn--block lead-form__submit">
+      <span data-submit-label>{submitLabel}</span>
+      <Icon name="ArrowRight" />
+    </button>
+
+    <ul class="lead-form__reassure" role="list">
+      {
+        f.reassurance.map((r, i) => (
+          <li>
+            <Icon name={i === 2 ? 'Lock' : 'CircleCheck'} size={15} />
+            {r}
+          </li>
+        ))
+      }
+    </ul>
+
+    <noscript><p class="form-error">{t(lang).common.noJs} {site.contact.phone}</p></noscript>
+  </form>
+
+  <div class="lead-form__success" data-form-success hidden tabindex="-1" role="status">
+    <span class="lead-form__success-icon"><Icon name="CircleCheck" size={36} /></span>
+    <p class="lead-form__title" data-success-title>{f.successTitle}</p>
+    <p data-success-text>{f.successText}</p>
+    <a href={`tel:${site.contact.phoneIntl}`} class="btn btn--outline"><Icon name="Phone" />{site.contact.phone}</a>
+    <template data-mailto-copy><span data-title>{f.mailtoTitle}</span><span data-text>{f.mailtoText}</span></template>
+    <template data-error-copy>{f.errorText} {site.contact.phone}.</template>
+  </div>
+</div>
+
+<style>
+  .lead-form {
+    position: relative;
+    background: #fff;
+    border-radius: var(--radius-lg);
+    color: var(--ink-900);
+  }
+  .lead-form--hero {
+    padding: clamp(1.25rem, 1rem + 1.2vw, 2rem);
+    box-shadow: var(--shadow-lg);
+    border: 1px solid rgb(255 255 255 / 0.6);
+  }
+  .lead-form--quote,
+  .lead-form--contact {
+    padding: clamp(1.25rem, 1rem + 1.5vw, 2.5rem);
+    border: 1px solid var(--color-border);
+    box-shadow: var(--shadow);
+  }
+
+  .lead-form__head[hidden] {
+    display: none;
+  }
+  .lead-form__head {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 1rem;
+    margin-bottom: 1.1rem;
+  }
+  .lead-form__title {
+    margin: 0 0 0.2rem;
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: 1.45rem;
+    line-height: 1.2;
+    color: var(--navy-900);
+  }
+  .lead-form__subtitle {
+    margin: 0;
+    font-size: var(--fs-sm);
+    color: var(--ink-600);
+  }
+  .lead-form__badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.4rem 0.75rem;
+    border-radius: var(--radius-pill);
+    background: var(--green-100);
+    color: var(--green-700);
+    font-size: var(--fs-xs);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    white-space: nowrap;
+  }
+
+  .hp {
+    position: absolute;
+    left: -9999px;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+  }
+
+  /* Contrôle segmenté Pro / Particulier */
+  .segmented {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4px;
+    margin: 0 0 1rem;
+    padding: 4px;
+    border: 0;
+    border-radius: 12px;
+    background: var(--ink-100);
+  }
+  .segmented__opt {
+    position: relative;
+    cursor: pointer;
+  }
+  .segmented__opt input {
+    position: absolute;
+    opacity: 0;
+    inset: 0;
+    cursor: pointer;
+  }
+  .segmented__opt span {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.45rem;
+    min-height: 44px;
+    border-radius: 9px;
+    font-weight: 600;
+    font-size: 0.95rem;
+    color: var(--ink-600);
+    transition:
+      background-color 0.15s,
+      color 0.15s,
+      box-shadow 0.15s;
+  }
+  .segmented__opt input:checked + span {
+    background: #fff;
+    color: var(--blue-700);
+    box-shadow: var(--shadow-sm);
+  }
+  .segmented__opt input:focus-visible + span {
+    outline: 3px solid var(--blue-500);
+    outline-offset: 1px;
+  }
+
+  .fields {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.85rem 0.85rem;
+  }
+  .field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+    min-width: 0;
+  }
+  .field--full {
+    grid-column: 1 / -1;
+  }
+  .field[hidden] {
+    display: none;
+  }
+  @media (max-width: 479px) {
+    .fields {
+      grid-template-columns: 1fr;
+    }
+  }
+  .fields:has(.field--company[hidden]) .field--name,
+  .lead-form--contact .field--name {
+    grid-column: 1 / -1;
+  }
+  .lead-form--hero .field input,
+  .lead-form--hero .field select {
+    min-height: 46px;
+    padding-block: 0.6rem;
+  }
+  .lead-form--hero .fields {
+    gap: 0.75rem;
+  }
+
+  .field label {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--ink-700);
+  }
+  .req {
+    color: var(--red-600);
+  }
+  .field input,
+  .field select,
+  .field textarea {
+    width: 100%;
+    min-height: 48px;
+    padding: 0.7rem 0.9rem;
+    font: inherit;
+    font-size: 1rem;
+    color: var(--ink-900);
+    background: #fff;
+    border: 1.5px solid var(--ink-300);
+    border-radius: 10px;
+    transition:
+      border-color 0.15s,
+      box-shadow 0.15s;
+    appearance: none;
+  }
+  .field textarea {
+    resize: vertical;
+    min-height: 120px;
+  }
+  .field input:hover,
+  .field select:hover,
+  .field textarea:hover {
+    border-color: var(--ink-500);
+  }
+  .field input:focus,
+  .field select:focus,
+  .field textarea:focus {
+    outline: none;
+    border-color: var(--blue-600);
+    box-shadow: 0 0 0 4px rgb(42 111 208 / 0.15);
+  }
+  .select {
+    position: relative;
+  }
+  .select select {
+    padding-right: 2.5rem;
+    cursor: pointer;
+  }
+  .select :global(svg) {
+    position: absolute;
+    right: 0.85rem;
+    top: 50%;
+    transform: translateY(-50%);
+    pointer-events: none;
+    color: var(--ink-500);
+  }
+  .select select:invalid {
+    color: var(--ink-500);
+  }
+
+  :global(.was-validated) .field input:invalid,
+  :global(.was-validated) .field select:invalid,
+  :global(.was-validated) .field textarea:invalid {
+    border-color: var(--red-600);
+    background: #fff7f6;
+  }
+
+  .checkbox {
+    display: flex;
+    gap: 0.65rem;
+    align-items: flex-start;
+    font-size: 0.82rem !important;
+    font-weight: 400 !important;
+    line-height: 1.5;
+    color: var(--ink-600) !important;
+    cursor: pointer;
+  }
+  .checkbox input {
+    flex: none;
+    width: 20px !important;
+    height: 20px;
+    min-height: 0 !important;
+    margin-top: 1px;
+    padding: 0 !important;
+    border-radius: 6px !important;
+    appearance: auto !important;
+    accent-color: var(--green-600);
+  }
+  :global(.was-validated) .checkbox input:invalid {
+    outline: 2px solid var(--red-600);
+    outline-offset: 1px;
+  }
+
+  .form-error {
+    margin: 0.85rem 0 0;
+    padding: 0.7rem 0.9rem;
+    border-radius: 10px;
+    background: #fdecea;
+    color: #9c1c13;
+    font-size: var(--fs-sm);
+    font-weight: 500;
+  }
+
+  .lead-form__submit {
+    margin-top: 1.1rem;
+  }
+  .lead-form__submit[disabled] {
+    opacity: 0.7;
+    cursor: progress;
+  }
+
+  .lead-form__reassure {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.4rem 1.1rem;
+    list-style: none;
+    margin: 0.9rem 0 0;
+    padding: 0;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--ink-600);
+  }
+  .lead-form__reassure li {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+  }
+  .lead-form__reassure :global(svg) {
+    color: var(--green-600);
+  }
+
+  .lead-form__success {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 0.5rem;
+    padding: 2rem 0.5rem;
+  }
+  .lead-form__success[hidden] {
+    display: none;
+  }
+  .lead-form__success p {
+    margin: 0;
+    color: var(--ink-600);
+  }
+  .lead-form__success .lead-form__title {
+    color: var(--navy-900);
+  }
+  .lead-form__success .btn {
+    margin-top: 0.75rem;
+  }
+  .lead-form__success-icon {
+    display: grid;
+    place-items: center;
+    width: 72px;
+    height: 72px;
+    border-radius: 50%;
+    background: var(--green-100);
+    color: var(--green-600);
+    margin-bottom: 0.5rem;
+  }
+</style>

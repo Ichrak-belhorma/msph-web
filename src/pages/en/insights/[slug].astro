@@ -1,0 +1,12 @@
+---
+import ArticleView from '../../../views/ArticleView.astro';
+import { articles } from '../../../data/articles';
+
+export function getStaticPaths() {
+  return articles.map((article) => ({ params: { slug: article.en.slug }, props: { article } }));
+}
+
+const { article } = Astro.props;
+---
+
+<ArticleView lang="en" article={article} />

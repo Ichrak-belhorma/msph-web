@@ -1,0 +1,81 @@
+---
+import Icon from './Icon.astro';
+import Img from './Img.astro';
+import type { Article } from '../data/articles';
+import { articlePath, locales, type Lang } from '../i18n/routes';
+import { t } from '../i18n/ui';
+
+interface Props {
+  article: Article;
+  lang: Lang;
+}
+
+const { article, lang } = Astro.props;
+const c = article[lang];
+const date = new Date(article.date).toLocaleDateString(locales[lang], { day: 'numeric', month: 'long', year: 'numeric' });
+---
+
+<article class="art-card" data-reveal>
+  <a href={articlePath(c.slug, lang)} class="art-card__link">
+    <div class="art-card__media media">
+      <Img name={article.image} lang={lang} sizes="(min-width: 1100px) 380px, (min-width: 700px) 45vw, 100vw" width={800} />
+    </div>
+    <div class="art-card__body">
+      <p class="art-card__meta">
+        <span class="pill">{c.category}</span>
+        <span><time datetime={article.date}>{date}</time> · {article.readingTime} {t(lang).common.minutesRead}</span>
+      </p>
+      <h3>{c.title}</h3>
+      <p class="art-card__excerpt">{c.excerpt}</p>
+      <span class="link-arrow">{t(lang).cta.readArticle}<Icon name="ArrowRight" /></span>
+    </div>
+  </a>
+</article>
+
+<style>
+  .art-card__link {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    background: #fff;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    color: inherit;
+    text-decoration: none;
+    transition:
+      transform 0.3s var(--ease),
+      box-shadow 0.3s var(--ease);
+  }
+  .art-card__link:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-lg);
+    color: inherit;
+  }
+  .art-card__media {
+    aspect-ratio: 16 / 9;
+    border-radius: 0;
+  }
+  .art-card__body {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    padding: 1.5rem;
+  }
+  .art-card__meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem 0.75rem;
+    font-size: var(--fs-xs);
+    color: var(--ink-500);
+  }
+  .art-card h3 {
+    font-size: 1.2rem;
+  }
+  .art-card__excerpt {
+    flex: 1;
+    font-size: var(--fs-sm);
+    color: var(--ink-600);
+  }
+</style>

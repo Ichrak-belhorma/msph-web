@@ -1,0 +1,283 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PageHero from '../components/PageHero.astro';
+import LeadForm from '../components/LeadForm.astro';
+import Icon from '../components/Icon.astro';
+import Img from '../components/Img.astro';
+import ProcessSteps from '../components/ProcessSteps.astro';
+import Faq from '../components/Faq.astro';
+import ServiceCard from '../components/ServiceCard.astro';
+import CtaBand from '../components/CtaBand.astro';
+import { site } from '../config/site';
+import { services, type Service } from '../data/services';
+import { path, routes, type Lang } from '../i18n/routes';
+import { t } from '../i18n/ui';
+
+interface Props {
+  lang: Lang;
+  service: Service;
+}
+
+const { lang, service } = Astro.props;
+const ui = t(lang);
+const fr = lang === 'fr';
+const c = service[lang];
+
+const pestByService = {
+  'service.rodents': 'rodents',
+  'service.insects': 'cockroaches',
+  'service.bedbugs': 'bedbugs',
+  'service.wasps': 'wasps',
+  'service.birds': 'birds',
+  'service.disinfection': 'disinfection',
+} as const;
+const defaultPest = pestByService[service.key as keyof typeof pestByService];
+const related = services.filter((s) => s.key !== service.key).slice(0, 3);
+
+const serviceSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'Service',
+  name: c.title,
+  serviceType: c.title,
+  description: c.metaDescription,
+  provider: { '@id': `${new URL(site.url).origin}/#organization` },
+  areaServed: site.serviceAreas,
+  url: new URL(path(service.key, lang), site.url).href,
+};
+---
+
+<BaseLayout lang={lang} title={c.metaTitle} description={c.metaDescription} alternates={routes[service.key]} schema={[serviceSchema]}>
+  <PageHero
+    lang={lang}
+    eyebrow={fr ? 'Nos services' : 'Our services'}
+    title={c.heroTitle}
+    lead={c.intro}
+    image={service.image}
+    withAside
+    crumbs={[{ label: ui.nav.services, href: path('services', lang) }, { label: c.title }]}
+  >
+    <ul class="targets" role="list">
+      {
+        c.targets.map((target) => (
+          <li>
+            <Icon name="Check" size={16} />
+            {target}
+          </li>
+        ))
+      }
+    </ul>
+    <a href={`tel:${site.contact.phoneIntl}`} class="svc-call">
+      <Icon name="PhoneCall" size={20} />
+      <span>{ui.cta.emergency} <strong>{site.contact.phone}</strong></span>
+    </a>
+    <LeadForm slot="aside" lang={lang} variant="hero" id="form-service" defaultPest={defaultPest} />
+  </PageHero>
+
+  <section class="section">
+    <div class="container split">
+      <div data-reveal>
+        <p class="eyebrow">{fr ? 'Diagnostic' : 'Diagnosis'}</p>
+        <h2>{c.signsTitle}</h2>
+        <ul class="signs" role="list">
+          {
+            c.signs.map((sign) => (
+              <li>
+                <span class="signs__icon">
+                  <Icon name="Search" size={18} />
+                </span>
+                {sign}
+              </li>
+            ))
+          }
+        </ul>
+        <p class="muted">
+          {fr ? 'Vous reconnaissez l’un de ces signes ? N’attendez pas que l’infestation s’étende.' : 'Recognise one of these signs? Don’t wait for the infestation to spread.'}
+        </p>
+        <a href="#form-service" class="btn btn--cta btn--lg">{ui.cta.quoteLong}<Icon name="ArrowRight" /></a>
+      </div>
+      <div class="svc-media media" data-reveal>
+        <Img name={service.detailImage} lang={lang} sizes="(min-width: 960px) 45vw, 100vw" />
+      </div>
+    </div>
+  </section>
+
+  <section class="section section--alt">
+    <div class="container">
+      <div class="section-head section-head--center">
+        <p class="eyebrow">{fr ? 'Notre méthode' : 'Our method'}</p>
+        <h2>{c.methodTitle}</h2>
+        <p>{fr ? 'Une démarche de lutte intégrée conforme à la norme NF EN 16636.' : 'An integrated pest management approach compliant with EN 16636.'}</p>
+      </div>
+      <ProcessSteps steps={c.method} />
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container svc-grid">
+      <div class="card svc-included" data-reveal>
+        <span class="icon-badge icon-badge--green"><Icon name="ListChecks" /></span>
+        <h2 class="h3">{c.includedTitle}</h2>
+        <ul class="check-list" role="list">
+          {c.included.map((item) => <li>{item}</li>)}
+        </ul>
+      </div>
+      <div class="svc-b2b on-dark" data-reveal>
+        <span class="icon-badge"><Icon name="Building2" /></span>
+        <h2 class="h3">{fr ? 'Vous êtes un professionnel ?' : 'Are you a business?'}</h2>
+        <p>{c.b2b}</p>
+        <div class="btn-row">
+          <a href={path('quote', lang)} class="btn btn--cta">{ui.cta.audit}</a>
+          <a href={path('business', lang)} class="btn btn--ghost-light">{fr ? 'Offre entreprises' : 'Business offer'}</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section--alt">
+    <div class="container container--narrow">
+      <div class="section-head section-head--center">
+        <p class="eyebrow">FAQ</p>
+        <h2>{fr ? `Vos questions sur : ${c.title.toLowerCase()}` : `Your questions about ${c.title.toLowerCase()}`}</h2>
+      </div>
+      <Faq items={c.faq} schema />
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="section-head">
+        <p class="eyebrow">{ui.common.related}</p>
+        <h2>{fr ? 'Nos autres expertises' : 'Our other services'}</h2>
+      </div>
+      <div class="grid grid--3">
+        {related.map((s) => <ServiceCard service={s} lang={lang} />)}
+      </div>
+      <div style="margin-top:3rem">
+        <CtaBand
+          lang={lang}
+          title={fr ? `Besoin d’une intervention : ${c.title.toLowerCase()} ?` : `Need help with ${c.title.toLowerCase()}?`}
+          text={fr ? 'Diagnostic gratuit et devis détaillé sous 24 h.' : 'Free assessment and detailed quote within 24 hours.'}
+        />
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .targets {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    list-style: none;
+    margin: 1.5rem 0 0;
+    padding: 0;
+  }
+  .targets li {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.4rem 0.8rem;
+    border-radius: var(--radius-pill);
+    background: rgb(255 255 255 / 0.08);
+    border: 1px solid rgb(255 255 255 / 0.14);
+    font-size: var(--fs-sm);
+    font-weight: 500;
+    color: #e6edf7;
+  }
+  .targets :global(svg) {
+    color: var(--green-400);
+  }
+  .svc-call {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    margin-top: 1.75rem;
+    color: #e6edf7;
+    text-decoration: none;
+  }
+  .svc-call :global(svg) {
+    color: var(--green-400);
+  }
+  .svc-call strong {
+    font-family: var(--font-display);
+    font-size: 1.15rem;
+    color: #fff;
+    white-space: nowrap;
+  }
+  .svc-call:hover strong {
+    text-decoration: underline;
+  }
+
+  .signs {
+    display: grid;
+    gap: 0.75rem;
+    list-style: none;
+    margin: 1.5rem 0;
+    padding: 0;
+  }
+  .signs li {
+    display: flex;
+    gap: 0.85rem;
+    align-items: flex-start;
+    padding: 0.9rem 1rem;
+    border-radius: var(--radius);
+    background: var(--paper-alt);
+    font-weight: 500;
+    color: var(--ink-700);
+  }
+  .signs__icon {
+    display: grid;
+    place-items: center;
+    flex: none;
+    width: 34px;
+    height: 34px;
+    border-radius: 10px;
+    background: #fff;
+    color: var(--blue-700);
+    box-shadow: var(--shadow-sm);
+  }
+  .svc-media {
+    aspect-ratio: 4 / 4.2;
+    box-shadow: var(--shadow-lg);
+  }
+  @media (max-width: 959px) {
+    .svc-media {
+      aspect-ratio: 16 / 10;
+    }
+  }
+
+  .svc-grid {
+    display: grid;
+    gap: 1.5rem;
+  }
+  @media (min-width: 900px) {
+    .svc-grid {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+  .h3 {
+    font-size: var(--fs-xl);
+    margin-top: 1rem;
+  }
+  .svc-included {
+    padding: clamp(1.5rem, 1.25rem + 1.5vw, 2.5rem);
+  }
+  .svc-b2b {
+    padding: clamp(1.5rem, 1.25rem + 1.5vw, 2.5rem);
+    border-radius: var(--radius);
+    background:
+      radial-gradient(circle at 100% 0%, rgb(52 196 122 / 0.2), transparent 45%),
+      linear-gradient(135deg, var(--navy-900), var(--blue-700));
+    color: #c9d6e8;
+  }
+  .svc-b2b h2 {
+    color: #fff;
+  }
+  .svc-b2b .icon-badge {
+    background: rgb(255 255 255 / 0.1);
+    color: var(--green-400);
+  }
+  .svc-b2b p {
+    margin-bottom: 1.5rem;
+  }
+</style>

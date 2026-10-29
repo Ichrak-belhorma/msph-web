@@ -1,0 +1,85 @@
+---
+import Icon from './Icon.astro';
+import { site } from '../config/site';
+import { path, type Lang } from '../i18n/routes';
+import { t } from '../i18n/ui';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const ui = t(lang);
+---
+
+<div class="mobile-bar" role="region" aria-label={lang === 'fr' ? 'Actions rapides' : 'Quick actions'}>
+  <a href={`tel:${site.contact.phoneIntl}`} class="mobile-bar__btn mobile-bar__btn--call">
+    <Icon name="Phone" size={20} />
+    <span>{ui.cta.call}</span>
+  </a>
+  {
+    site.contact.whatsapp && (
+      <a href={`https://wa.me/${site.contact.whatsapp}`} class="mobile-bar__btn mobile-bar__btn--wa" rel="noopener" target="_blank">
+        <Icon name="MessageCircle" size={20} />
+        <span>{ui.cta.whatsapp}</span>
+      </a>
+    )
+  }
+  <a href={path('quote', lang)} class="mobile-bar__btn mobile-bar__btn--quote">
+    <Icon name="ClipboardCheck" size={20} />
+    <span>{ui.cta.quote}</span>
+  </a>
+</div>
+
+<style>
+  .mobile-bar {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 90;
+    display: flex;
+    gap: 0.6rem;
+    padding: 0.6rem var(--gutter) calc(0.6rem + env(safe-area-inset-bottom));
+    background: rgb(255 255 255 / 0.97);
+    backdrop-filter: blur(8px);
+    border-top: 1px solid var(--color-border);
+    box-shadow: 0 -8px 24px -12px rgb(7 28 61 / 0.25);
+  }
+  .mobile-bar__btn {
+    flex: 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    min-height: 52px;
+    border-radius: var(--radius-pill);
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 1rem;
+    text-decoration: none;
+  }
+  .mobile-bar__btn--call {
+    background: var(--navy-800);
+    color: #fff;
+  }
+  .mobile-bar__btn--wa {
+    flex: 0 0 auto;
+    padding-inline: 1rem;
+    background: #e8f8ee;
+    color: #128c4a;
+  }
+  .mobile-bar__btn--quote {
+    flex: 1.4;
+    background: var(--green-600);
+    color: #fff;
+  }
+  .mobile-bar__btn:hover {
+    color: #fff;
+  }
+  @media (min-width: 900px) {
+    .mobile-bar {
+      display: none;
+    }
+  }
+</style>

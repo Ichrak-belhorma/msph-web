@@ -1,0 +1,226 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PageHero from '../components/PageHero.astro';
+import LeadForm from '../components/LeadForm.astro';
+import Icon from '../components/Icon.astro';
+import Img from '../components/Img.astro';
+import ProcessSteps from '../components/ProcessSteps.astro';
+import Faq from '../components/Faq.astro';
+import { site } from '../config/site';
+import { services } from '../data/services';
+import { faqGroups } from '../data/faq';
+import { path, routes, type Lang } from '../i18n/routes';
+import { t } from '../i18n/ui';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const ui = t(lang);
+const fr = lang === 'fr';
+
+const promises = fr
+  ? [
+      { icon: 'Euro', title: 'Prix ferme et transparent', text: 'Devis gratuit et détaillé avant toute intervention. Aucun frais caché.' },
+      { icon: 'Baby', title: 'Sécurité de votre famille', text: 'Produits homologués, appâts sécurisés, consignes claires pour les enfants et les animaux.' },
+      { icon: 'EyeOff', title: 'Discrétion', text: 'Véhicules banalisés sur demande, techniciens en tenue sobre.' },
+      { icon: 'ShieldCheck', title: 'Résultat garanti', text: 'Si les nuisibles reviennent pendant la période de garantie, nous revenons gratuitement.' },
+    ]
+  : [
+      { icon: 'Euro', title: 'Fixed, transparent price', text: 'Free, detailed quote before any work. No hidden costs.' },
+      { icon: 'Baby', title: 'Your family’s safety', text: 'Approved products, secure baits, clear instructions for children and pets.' },
+      { icon: 'EyeOff', title: 'Discretion', text: 'Unmarked vehicles on request, discreetly dressed technicians.' },
+      { icon: 'ShieldCheck', title: 'Guaranteed results', text: 'If pests come back during the guarantee period, we return free of charge.' },
+    ];
+
+const steps = fr
+  ? [
+      { title: 'Vous nous contactez', text: 'Par téléphone ou via le formulaire, en décrivant votre problème (photo bienvenue).' },
+      { title: 'Devis gratuit', text: 'Nous vous conseillons et vous remettons un prix ferme, souvent dès l’appel.' },
+      { title: 'Intervention', text: 'Un technicien certifié intervient chez vous, généralement sous 24 à 48 h.' },
+      { title: 'Suivi', text: 'Conseils de prévention, passage de contrôle si nécessaire et garantie.' },
+    ]
+  : [
+      { title: 'You contact us', text: 'By phone or via the form, describing your problem (photos welcome).' },
+      { title: 'Free quote', text: 'We advise you and give you a fixed price, often during the call.' },
+      { title: 'Treatment', text: 'A certified technician visits your home, usually within 24 to 48 hours.' },
+      { title: 'Follow-up', text: 'Prevention advice, a follow-up visit if needed and a guarantee.' },
+    ];
+---
+
+<BaseLayout
+  lang={lang}
+  title={fr ? 'Particuliers : dératisation, punaises de lit, guêpes, cafards à domicile | MSPH' : 'Homeowners: rats, bed bugs, wasps, cockroaches at home | MSPH'}
+  description={fr
+    ? 'Souris, rats, punaises de lit, cafards, nid de guêpes ou de frelons chez vous ? Intervention rapide et discrète, devis gratuit, résultat garanti par des techniciens certifiés.'
+    : 'Mice, rats, bed bugs, cockroaches, wasp or hornet nest at home? Fast, discreet service, free quote, guaranteed results by certified technicians.'}
+  alternates={routes.residential}
+>
+  <PageHero
+    lang={lang}
+    eyebrow={ui.nav.residential}
+    title={fr ? 'Des nuisibles chez vous ? Retrouvez la sérénité rapidement' : 'Pests at home? Get your peace of mind back fast'}
+    lead={fr
+      ? 'Maison, appartement, résidence secondaire : nos techniciens certifiés éliminent durablement les nuisibles, en toute sécurité pour votre famille et vos animaux.'
+      : 'House, flat or holiday home: our certified technicians get rid of pests for good, safely for your family and pets.'}
+    image="technicianHome"
+    withAside
+    crumbs={[{ label: ui.nav.residential }]}
+  >
+    <a href={`tel:${site.contact.phoneIntl}`} class="btn btn--white btn--lg" style="margin-top:1.75rem">
+      <Icon name="Phone" />
+      {site.contact.phone}
+    </a>
+    <LeadForm slot="aside" lang={lang} variant="hero" id="form-residential" defaultProfile="home" />
+  </PageHero>
+
+  <section class="section">
+    <div class="container">
+      <div class="section-head section-head--center">
+        <p class="eyebrow">{fr ? 'Vos problèmes, nos solutions' : 'Your problems, our solutions'}</p>
+        <h2>{fr ? 'Quel nuisible vous dérange ?' : 'Which pest is bothering you?'}</h2>
+      </div>
+      <ul class="pests" role="list">
+        {
+          services.map((s) => (
+            <li data-reveal>
+              <a href={path(s.key, lang)}>
+                <span class="icon-badge">
+                  <Icon name={s.icon} />
+                </span>
+                <strong>{s[lang].title}</strong>
+                <small>{s[lang].targets.slice(0, 3).join(' · ')}</small>
+                <span class="link-arrow">
+                  {ui.cta.learnMore}
+                  <Icon name="ArrowRight" />
+                </span>
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+
+  <section class="section section--alt">
+    <div class="container">
+      <div class="section-head section-head--center">
+        <p class="eyebrow">{fr ? 'Comment ça marche' : 'How it works'}</p>
+        <h2>{fr ? 'Une intervention simple et rapide' : 'A simple, fast process'}</h2>
+      </div>
+      <ProcessSteps steps={steps} />
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container split">
+      <div data-reveal>
+        <p class="eyebrow">{fr ? 'Nos engagements' : 'Our commitments'}</p>
+        <h2>{fr ? 'Votre tranquillité, notre priorité' : 'Your peace of mind, our priority'}</h2>
+        <div class="promises">
+          {
+            promises.map((p) => (
+              <div class="promise">
+                <span class="icon-badge icon-badge--green">
+                  <Icon name={p.icon as 'Euro'} />
+                </span>
+                <div>
+                  <h3>{p.title}</h3>
+                  <p>{p.text}</p>
+                </div>
+              </div>
+            ))
+          }
+        </div>
+      </div>
+      <div class="res-media media" data-reveal>
+        <Img name="technicianSuit" lang={lang} sizes="(min-width: 960px) 45vw, 100vw" />
+      </div>
+    </div>
+  </section>
+
+  <section class="section section--alt">
+    <div class="container container--narrow">
+      <div class="section-head section-head--center">
+        <p class="eyebrow">FAQ</p>
+        <h2>{fr ? 'Vos questions fréquentes' : 'Frequently asked questions'}</h2>
+      </div>
+      <Faq items={[...faqGroups[lang][2].items, ...faqGroups[lang][3].items]} schema />
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .pests {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr));
+    gap: 1rem;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .pests a {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    height: 100%;
+    padding: 1.5rem;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    background: #fff;
+    color: inherit;
+    text-decoration: none;
+    transition:
+      border-color 0.2s,
+      box-shadow 0.2s,
+      transform 0.2s;
+  }
+  .pests a:hover {
+    border-color: var(--blue-100);
+    box-shadow: var(--shadow);
+    transform: translateY(-3px);
+  }
+  .pests .icon-badge {
+    margin-bottom: 0.5rem;
+  }
+  .pests strong {
+    font-family: var(--font-display);
+    font-size: 1.15rem;
+    color: var(--navy-900);
+  }
+  .pests small {
+    flex: 1;
+    color: var(--ink-500);
+    font-size: var(--fs-sm);
+    margin-bottom: 0.75rem;
+  }
+  .promises {
+    display: grid;
+    gap: 1.25rem;
+    margin-top: 1.75rem;
+  }
+  .promise {
+    display: flex;
+    gap: 1rem;
+    align-items: flex-start;
+  }
+  .promise h3 {
+    font-size: 1.1rem;
+    margin-bottom: 0.25rem;
+  }
+  .promise p {
+    margin: 0;
+    color: var(--ink-600);
+    font-size: var(--fs-sm);
+  }
+  .res-media {
+    aspect-ratio: 4 / 4.4;
+    box-shadow: var(--shadow-lg);
+  }
+  @media (max-width: 959px) {
+    .res-media {
+      aspect-ratio: 16 / 10;
+    }
+  }
+</style>

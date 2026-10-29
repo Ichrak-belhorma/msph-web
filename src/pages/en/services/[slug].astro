@@ -1,0 +1,16 @@
+---
+import ServiceView from '../../../views/ServiceView.astro';
+import { services } from '../../../data/services';
+import { path } from '../../../i18n/routes';
+
+export function getStaticPaths() {
+  return services.map((service) => ({
+    params: { slug: path(service.key, 'en').split('/').filter(Boolean).pop() },
+    props: { service },
+  }));
+}
+
+const { service } = Astro.props;
+---
+
+<ServiceView lang="en" service={service} />

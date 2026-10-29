@@ -1,0 +1,169 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Breadcrumbs from '../components/Breadcrumbs.astro';
+import Img from '../components/Img.astro';
+import Icon from '../components/Icon.astro';
+import LeadForm from '../components/LeadForm.astro';
+import ArticleCard from '../components/ArticleCard.astro';
+import { site } from '../config/site';
+import { sortedArticles, type Article } from '../data/articles';
+import { getService } from '../data/services';
+import { images, imageUrl } from '../data/images';
+import { articlePath, locales, path, type Lang } from '../i18n/routes';
+import { t } from '../i18n/ui';
+
+interface Props {
+  lang: Lang;
+  article: Article;
+}
+
+const { lang, article } = Astro.props;
+const ui = t(lang);
+const fr = lang === 'fr';
+const c = article[lang];
+const date = new Date(article.date).toLocaleDateString(locales[lang], { day: 'numeric', month: 'long', year: 'numeric' });
+const others = sortedArticles().filter((a) => a.id !== article.id).slice(0, 2);
+const relatedLinks = article.related.map((key) => {
+  const svc = getService(key);
+  const label = svc ? svc[lang].title : key === 'business' ? ui.nav.businessContracts : ui.nav.residential;
+  return { href: path(key, lang), label };
+});
+
+const schema = {
+  '@context': 'https://schema.org',
+  '@type': 'Article',
+  headline: c.title,
+  description: c.excerpt,
+  datePublished: article.date,
+  dateModified: article.date,
+  inLanguage: locales[lang],
+  image: imageUrl(images[article.image], 1200),
+  author: { '@type': 'Organization', name: `${site.name} — ${site.brand}` },
+  publisher: { '@id': `${new URL(site.url).origin}/#organization` },
+  mainEntityOfPage: new URL(articlePath(c.slug, lang), site.url).href,
+};
+const alternates = { fr: articlePath(article.fr.slug, 'fr'), en: articlePath(article.en.slug, 'en') };
+---
+
+<BaseLayout lang={lang} title={`${c.title} | MSPH`} description={c.excerpt} alternates={alternates} schema={[schema]} image={imageUrl(images[article.image], 1200)}>
+  <header class="art-hero on-dark">
+    <div class="container art-hero__inner">
+      <Breadcrumbs lang={lang} items={[{ label: ui.nav.blog, href: path('blog', lang) }, { label: c.title }]} />
+      <p class="art-hero__meta">
+        <span class="pill">{c.category}</span>
+        <span><time datetime={article.date}>{date}</time> · {article.readingTime} {ui.common.minutesRead}</span>
+      </p>
+      <h1>{c.title}</h1>
+      <p class="art-hero__lead">{c.excerpt}</p>
+    </div>
+  </header>
+
+  <div class="container art-layout">
+    <article class="art-main">
+      <div class="art-cover media">
+        <Img name={article.image} lang={lang} sizes="(min-width: 1100px) 760px, 100vw" eager />
+      </div>
+      <div class="prose" set:html={c.body} />
+      <div class="art-related">
+        <p><strong>{ui.common.related} :</strong></p>
+        <ul role="list">
+          {relatedLinks.map((l) => <li><a href={l.href} class="link-arrow">{l.label}<Icon name="ArrowRight" /></a></li>)}
+        </ul>
+      </div>
+    </article>
+    <aside class="art-aside">
+      <div class="art-aside__sticky">
+        <LeadForm lang={lang} variant="hero" id="form-article" title={fr ? 'Besoin d’un expert ?' : 'Need an expert?'} />
+      </div>
+    </aside>
+  </div>
+
+  <section class="section section--alt">
+    <div class="container">
+      <div class="section-head">
+        <p class="eyebrow">{ui.nav.blog}</p>
+        <h2>{fr ? 'À lire aussi' : 'Read next'}</h2>
+      </div>
+      <div class="grid grid--2">
+        {others.map((a) => <ArticleCard article={a} lang={lang} />)}
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .art-hero {
+    background:
+      radial-gradient(circle at 90% 10%, rgb(52 196 122 / 0.16), transparent 35%),
+      linear-gradient(120deg, var(--navy-900), var(--navy-800) 60%, var(--blue-700));
+    color: #c9d6e8;
+    padding-block: clamp(2.5rem, 2rem + 3vw, 4.5rem) clamp(5rem, 4rem + 4vw, 8rem);
+  }
+  .art-hero__inner > * {
+    max-width: 820px;
+  }
+  .art-hero h1 {
+    color: #fff;
+    font-size: var(--fs-3xl);
+  }
+  .art-hero__meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.75rem;
+    font-size: var(--fs-sm);
+  }
+  .art-hero__lead {
+    font-size: var(--fs-lg);
+    margin: 0;
+  }
+  .art-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 3rem;
+    margin-top: clamp(-6rem, -4rem - 2vw, -3rem);
+    padding-bottom: var(--section-y);
+  }
+  @media (min-width: 1100px) {
+    .art-layout {
+      grid-template-columns: minmax(0, 1fr) 380px;
+      align-items: start;
+    }
+    .art-aside {
+      margin-top: 6rem;
+    }
+    .art-aside__sticky {
+      position: sticky;
+      top: calc(var(--header-h) + 1.5rem);
+    }
+  }
+  .art-main {
+    min-width: 0;
+  }
+  .art-cover {
+    aspect-ratio: 16 / 9;
+    margin-bottom: 2.5rem;
+    box-shadow: var(--shadow-lg);
+  }
+  .prose {
+    max-width: 760px;
+  }
+  .art-related {
+    max-width: 760px;
+    margin-top: 2.5rem;
+    padding: 1.5rem;
+    border-radius: var(--radius);
+    background: var(--paper-alt);
+  }
+  .art-related ul {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 1.5rem;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .art-aside :global(.lead-form) {
+    border: 1px solid var(--color-border);
+  }
+</style>

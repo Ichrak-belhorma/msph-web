@@ -1,0 +1,166 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PageHero from '../components/PageHero.astro';
+import ServiceCard from '../components/ServiceCard.astro';
+import Icon from '../components/Icon.astro';
+import CtaBand from '../components/CtaBand.astro';
+import { services } from '../data/services';
+import { path, routes, type Lang } from '../i18n/routes';
+import { t } from '../i18n/ui';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const ui = t(lang);
+const fr = lang === 'fr';
+
+const modes = fr
+  ? [
+      {
+        icon: 'Siren',
+        title: 'Intervention curative',
+        text: 'Vous constatez une infestation ? Nous intervenons rapidement pour éliminer les nuisibles, avec un passage de contrôle et une garantie de résultat.',
+        points: ['Intervention sous 24 h', 'Urgences 7j/7', 'Devis ferme avant intervention'],
+      },
+      {
+        icon: 'ShieldCheck',
+        title: 'Contrat préventif',
+        text: 'Pour les professionnels et les copropriétés : un plan de maîtrise annuel avec visites périodiques, interventions curatives incluses et traçabilité complète.',
+        points: ['De 4 à 12 visites par an', 'Curatif inclus', 'Rapports et registre HACCP'],
+      },
+    ]
+  : [
+      {
+        icon: 'Siren',
+        title: 'One-off treatment',
+        text: 'Spotted an infestation? We respond quickly to eliminate pests, with a follow-up visit and a results guarantee.',
+        points: ['Response within 24 h', 'Emergencies 7 days a week', 'Fixed quote before work'],
+      },
+      {
+        icon: 'ShieldCheck',
+        title: 'Prevention contract',
+        text: 'For businesses and residential buildings: an annual pest management plan with periodic visits, call-outs included and full traceability.',
+        points: ['4 to 12 visits a year', 'Call-outs included', 'Reports and HACCP log'],
+      },
+    ];
+
+const others = fr
+  ? ['Chenilles processionnaires', 'Puces et tiques', 'Mites textiles', 'Poissons d’argent', 'Moustiques', 'Taupes', 'Désinfection de vide-ordures', 'Débarras et nettoyage d’insalubrité']
+  : ['Processionary caterpillars', 'Fleas and ticks', 'Clothes moths', 'Silverfish', 'Mosquitoes', 'Moles', 'Refuse chute disinfection', 'Hoarding clean-up'];
+---
+
+<BaseLayout
+  lang={lang}
+  title={fr ? 'Nos services de lutte antiparasitaire et d’hygiène | MSPH' : 'Our pest control and hygiene services | MSPH'}
+  description={fr
+    ? 'Dératisation, désinsectisation, punaises de lit, guêpes et frelons, dépigeonnisation, désinfection : découvrez toutes les prestations de MSPH pour les professionnels et les particuliers.'
+    : 'Rodent control, insect control, bed bugs, wasps and hornets, bird control, disinfection: discover all MSPH services for businesses and homeowners.'}
+  alternates={routes.services}
+>
+  <PageHero
+    lang={lang}
+    eyebrow={fr ? 'Nos services' : 'Our services'}
+    title={fr ? 'Des solutions complètes contre tous les nuisibles' : 'Complete solutions for every pest'}
+    lead={fr
+      ? 'Interventions ponctuelles ou contrats de prévention : nos techniciens certifiés protègent vos locaux, vos équipes et votre clientèle avec des méthodes efficaces et responsables.'
+      : 'One-off treatments or prevention contracts: our certified technicians protect your premises, staff and customers with effective, responsible methods.'}
+    image="fogging"
+    crumbs={[{ label: ui.nav.services }]}
+  >
+    <div class="btn-row" style="margin-top:2rem">
+      <a href={path('quote', lang)} class="btn btn--cta btn--lg">{ui.cta.quoteLong}</a>
+      <a href={path('business', lang)} class="btn btn--ghost-light btn--lg">{fr ? 'Offre entreprises' : 'Business offer'}</a>
+    </div>
+  </PageHero>
+
+  <section class="section">
+    <div class="container">
+      <div class="grid grid--3">
+        {services.map((s) => <ServiceCard service={s} lang={lang} />)}
+      </div>
+    </div>
+  </section>
+
+  <section class="section section--alt">
+    <div class="container">
+      <div class="section-head section-head--center">
+        <p class="eyebrow">{fr ? 'Deux façons de travailler ensemble' : 'Two ways to work together'}</p>
+        <h2>{fr ? 'Curatif ou préventif : la bonne formule pour vous' : 'One-off or preventive: the right option for you'}</h2>
+      </div>
+      <div class="grid grid--2">
+        {
+          modes.map((m) => (
+            <div class="card mode" data-reveal>
+              <span class="icon-badge">
+                <Icon name={m.icon as 'Siren'} />
+              </span>
+              <h3>{m.title}</h3>
+              <p class="muted">{m.text}</p>
+              <ul class="check-list" role="list">
+                {m.points.map((p) => (
+                  <li>{p}</li>
+                ))}
+              </ul>
+            </div>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="section-head section-head--center">
+        <p class="eyebrow">{fr ? 'Et aussi' : 'And also'}</p>
+        <h2>{fr ? 'Votre nuisible n’est pas dans la liste ?' : 'Pest not listed?'}</h2>
+        <p>{fr ? 'Nous traitons de nombreuses autres situations. Décrivez-nous votre problème : un expert vous répond rapidement.' : 'We handle many other situations. Tell us about your problem and an expert will get back to you quickly.'}</p>
+      </div>
+      <ul class="others" role="list">
+        {
+          others.map((o) => (
+            <li>
+              <Icon name="CircleCheck" size={18} />
+              {o}
+            </li>
+          ))
+        }
+      </ul>
+      <div style="margin-top:3rem">
+        <CtaBand lang={lang} title={fr ? 'Un doute sur le nuisible ? Envoyez-nous une photo.' : 'Not sure what the pest is? Send us a photo.'} text={fr ? 'Nos techniciens identifient l’espèce et vous conseillent gratuitement.' : 'Our technicians will identify the species and advise you free of charge.'} primaryLabel={ui.cta.contactUs} primaryHref={path('contact', lang)} />
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .mode {
+    padding: clamp(1.5rem, 1.25rem + 1.5vw, 2.5rem);
+  }
+  .mode h3 {
+    margin-top: 1rem;
+  }
+  .others {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.75rem;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .others li {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.65rem 1.1rem;
+    border-radius: var(--radius-pill);
+    background: var(--paper-alt);
+    border: 1px solid var(--color-border);
+    font-weight: 500;
+  }
+  .others :global(svg) {
+    color: var(--green-600);
+  }
+</style>

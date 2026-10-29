@@ -1,0 +1,255 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PageHero from '../components/PageHero.astro';
+import LeadForm from '../components/LeadForm.astro';
+import Icon from '../components/Icon.astro';
+import { site } from '../config/site';
+import { path, routes, type Lang } from '../i18n/routes';
+import { t } from '../i18n/ui';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const ui = t(lang);
+const fr = lang === 'fr';
+const geo = site.address.geo;
+const mapSrc = geo
+  ? `https://www.openstreetmap.org/export/embed.html?bbox=${geo.lng - 0.02}%2C${geo.lat - 0.01}%2C${geo.lng + 0.02}%2C${geo.lat + 0.01}&layer=mapnik&marker=${geo.lat}%2C${geo.lng}`
+  : null;
+---
+
+<BaseLayout
+  lang={lang}
+  title={fr ? 'Contact — MSPH, MS Pro Hygiène | Téléphone, e-mail, adresse' : 'Contact — MSPH, MS Pro Hygiène | Phone, email, address'}
+  description={fr
+    ? `Contactez MSPH pour toute demande de dératisation, désinsectisation, désinfection ou contrat professionnel. Téléphone : ${site.contact.phone}. Réponse sous 2 h ouvrées.`
+    : `Contact MSPH for rodent control, insect control, disinfection or business contracts. Phone: ${site.contact.phone}. Reply within 2 business hours.`}
+  alternates={routes.contact}
+>
+  <PageHero
+    lang={lang}
+    eyebrow={ui.nav.contact}
+    title={fr ? 'Parlons de votre besoin' : 'Let’s talk about your needs'}
+    lead={fr ? 'Une question, une urgence, un projet de contrat ? Notre équipe vous répond rapidement.' : 'A question, an emergency, a contract project? Our team will get back to you quickly.'}
+    crumbs={[{ label: ui.nav.contact }]}
+  />
+
+  <section class="section">
+    <div class="container contact-grid">
+      <div class="contact-info">
+        <a href={`tel:${site.contact.phoneIntl}`} class="info-card info-card--accent">
+          <span class="icon-badge"><Icon name="PhoneCall" /></span>
+          <span>
+            <small>{fr ? 'Téléphone · urgences 7j/7' : 'Phone · emergencies 24/7'}</small>
+            <strong>{site.contact.phone}</strong>
+          </span>
+        </a>
+        <a href={`mailto:${site.contact.email}`} class="info-card">
+          <span class="icon-badge"><Icon name="Mail" /></span>
+          <span>
+            <small>E-mail</small>
+            <strong>{site.contact.email}</strong>
+          </span>
+        </a>
+        {
+          site.contact.whatsapp && (
+            <a href={`https://wa.me/${site.contact.whatsapp}`} class="info-card" target="_blank" rel="noopener">
+              <span class="icon-badge">
+                <Icon name="MessageCircle" />
+              </span>
+              <span>
+                <small>WhatsApp</small>
+                <strong>{fr ? 'Envoyez-nous une photo' : 'Send us a photo'}</strong>
+              </span>
+            </a>
+          )
+        }
+        <div class="info-card">
+          <span class="icon-badge"><Icon name="MapPin" /></span>
+          <span>
+            <small>{fr ? 'Adresse' : 'Address'}</small>
+            <strong>{site.address.street}<br />{site.address.postalCode} {site.address.city}</strong>
+          </span>
+        </div>
+        <div class="info-card info-card--block">
+          <span class="icon-badge"><Icon name="Clock" /></span>
+          <div>
+            <small>{ui.footer.hours}</small>
+            <dl class="hours">
+              {
+                site.hours[lang].map((h) => (
+                  <div>
+                    <dt>{h.days}</dt>
+                    <dd>{h.time}</dd>
+                  </div>
+                ))
+              }
+            </dl>
+          </div>
+        </div>
+        <div class="zone">
+          <p class="zone__title"><Icon name="Map" size={18} /> {ui.common.zone}</p>
+          <ul role="list">
+            {site.serviceAreas.map((a) => <li>{a}</li>)}
+          </ul>
+        </div>
+      </div>
+
+      <div>
+        <LeadForm
+          lang={lang}
+          variant="contact"
+          title={fr ? 'Envoyez-nous un message' : 'Send us a message'}
+          subtitle={fr ? 'Pour un devis, préférez notre formulaire de diagnostic gratuit.' : 'For a quote, use our free assessment form.'}
+        />
+        <p class="quote-hint">
+          <Icon name="ClipboardCheck" size={18} />
+          <a href={path('quote', lang)}>{ui.cta.quoteLong}</a>
+        </p>
+      </div>
+    </div>
+  </section>
+
+  {
+    mapSrc && (
+      <section class="map">
+        <iframe title={fr ? 'Plan d’accès' : 'Location map'} src={mapSrc} loading="lazy" referrerpolicy="no-referrer" />
+      </section>
+    )
+  }
+</BaseLayout>
+
+<style>
+  .contact-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 2.5rem;
+  }
+  @media (min-width: 1000px) {
+    .contact-grid {
+      grid-template-columns: 0.85fr 1.15fr;
+      gap: 3.5rem;
+      align-items: start;
+    }
+  }
+  .contact-info {
+    display: grid;
+    gap: 0.85rem;
+  }
+  .info-card {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1.1rem 1.25rem;
+    border-radius: var(--radius);
+    border: 1px solid var(--color-border);
+    background: #fff;
+    color: inherit;
+    text-decoration: none;
+  }
+  .info-card--block {
+    align-items: flex-start;
+  }
+  .info-card--block > div {
+    flex: 1;
+  }
+  a.info-card:hover {
+    border-color: var(--blue-100);
+    box-shadow: var(--shadow);
+    color: inherit;
+  }
+  .info-card small {
+    display: block;
+    font-size: var(--fs-xs);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--ink-500);
+  }
+  .info-card strong {
+    font-family: var(--font-display);
+    font-size: 1.1rem;
+    color: var(--navy-900);
+    word-break: break-word;
+  }
+  .info-card--accent {
+    background: linear-gradient(120deg, var(--navy-800), var(--blue-700));
+    border: 0;
+  }
+  .info-card--accent small {
+    color: #b9c7db;
+  }
+  .info-card--accent strong {
+    color: #fff;
+    font-size: 1.5rem;
+  }
+  .info-card--accent .icon-badge {
+    background: var(--green-600);
+    color: #fff;
+  }
+  .hours {
+    margin: 0.4rem 0 0;
+    display: grid;
+    gap: 0.2rem;
+  }
+  .hours div {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    font-size: var(--fs-sm);
+  }
+  .hours dd {
+    margin: 0;
+    font-weight: 600;
+  }
+  .zone {
+    padding: 1.25rem;
+    border-radius: var(--radius);
+    background: var(--paper-alt);
+  }
+  .zone__title {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin: 0 0 0.75rem;
+    font-family: var(--font-display);
+    font-weight: 700;
+    color: var(--navy-900);
+  }
+  .zone ul {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .zone li {
+    padding: 0.3rem 0.7rem;
+    border-radius: var(--radius-pill);
+    background: #fff;
+    border: 1px solid var(--color-border);
+    font-size: var(--fs-xs);
+    font-weight: 500;
+  }
+  .quote-hint {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    margin-top: 1.25rem;
+    font-weight: 600;
+  }
+  .quote-hint :global(svg) {
+    color: var(--green-600);
+  }
+  .map iframe {
+    display: block;
+    width: 100%;
+    height: 420px;
+    border: 0;
+    filter: saturate(0.85);
+  }
+</style>

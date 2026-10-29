@@ -1,0 +1,32 @@
+---
+import { images, imageUrl, imageSrcset, type ImageKey } from '../data/images';
+import type { Lang } from '../i18n/routes';
+
+interface Props {
+  name: ImageKey;
+  lang: Lang;
+  sizes?: string;
+  width?: number;
+  eager?: boolean;
+  class?: string;
+  alt?: string;
+}
+
+const { name, lang, sizes = '(min-width: 960px) 50vw, 100vw', width = 1200, eager = false, class: className, alt } = Astro.props;
+const img = images[name];
+---
+
+<img
+  src={imageUrl(img, width)}
+  srcset={imageSrcset(img)}
+  sizes={sizes}
+  alt={alt ?? img.alt[lang]}
+  loading={eager ? 'eager' : 'lazy'}
+  decoding="async"
+  fetchpriority={eager ? 'high' : undefined}
+  referrerpolicy="no-referrer"
+  width="1200"
+  height="800"
+  class={className}
+  onerror="this.onerror=null;this.style.visibility='hidden'"
+/>

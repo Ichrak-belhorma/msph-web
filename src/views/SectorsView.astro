@@ -1,0 +1,179 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PageHero from '../components/PageHero.astro';
+import Icon from '../components/Icon.astro';
+import Img from '../components/Img.astro';
+import CtaBand from '../components/CtaBand.astro';
+import { sectors } from '../data/sectors';
+import { path, routes, type Lang } from '../i18n/routes';
+import { t } from '../i18n/ui';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const ui = t(lang);
+const fr = lang === 'fr';
+---
+
+<BaseLayout
+  lang={lang}
+  title={fr ? 'Secteurs d’activité — Lutte antiparasitaire spécialisée | MSPH' : 'Industries — Specialist pest management | MSPH'}
+  description={fr
+    ? 'Restauration, agroalimentaire, hôtellerie, santé, logistique, copropriétés, commerce, collectivités : des solutions de lutte contre les nuisibles adaptées à chaque secteur.'
+    : 'Food service, food manufacturing, hotels, healthcare, logistics, housing, retail, public bodies: pest management solutions tailored to each industry.'}
+  alternates={routes.sectors}
+>
+  <PageHero
+    lang={lang}
+    eyebrow={ui.nav.sectors}
+    title={fr ? 'Une expertise adaptée à chaque secteur d’activité' : 'Expertise tailored to every industry'}
+    lead={fr
+      ? 'Contraintes réglementaires, horaires, publics sensibles, audits : nous adaptons nos méthodes et notre organisation à la réalité de votre métier.'
+      : 'Regulations, opening hours, vulnerable people, audits: we adapt our methods and organisation to the reality of your business.'}
+    image="foodFactory"
+    crumbs={[{ label: ui.nav.business, href: path('business', lang) }, { label: ui.nav.sectors }]}
+  >
+    <ul class="jump" role="list">
+      {
+        sectors.map((s) => (
+          <li>
+            <a href={`#${s.id}`}>
+              <Icon name={s.icon} size={16} />
+              {s[lang].title}
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+  </PageHero>
+
+  {
+    sectors.map((s, i) => (
+      <section class:list={['section', { 'section--alt': i % 2 === 1 }]} id={s.id}>
+        <div class:list={['container', 'split', { 'split--reverse': i % 2 === 1 }]}>
+          <div class="sector-media media" data-reveal>
+            <Img name={s.image} lang={lang} sizes="(min-width: 960px) 45vw, 100vw" />
+            <span class="sector-media__icon">
+              <Icon name={s.icon} size={28} />
+            </span>
+          </div>
+          <div data-reveal>
+            <p class="eyebrow">{s[lang].short}</p>
+            <h2>{s[lang].title}</h2>
+            <div class="challenge">
+              <Icon name="TriangleAlert" size={20} />
+              <p>{s[lang].challenge}</p>
+            </div>
+            <h3 class="sol-title">{fr ? 'Nos solutions' : 'Our solutions'}</h3>
+            <ul class="check-list" role="list">
+              {s[lang].solutions.map((sol) => (
+                <li>{sol}</li>
+              ))}
+            </ul>
+            {s[lang].standards && (
+              <p class="standards">
+                <Icon name="BadgeCheck" size={16} />
+                {s[lang].standards}
+              </p>
+            )}
+            <div class="btn-row" style="margin-top:1.75rem">
+              <a href={path('quote', lang)} class="btn btn--cta">
+                {ui.cta.audit}
+              </a>
+            </div>
+          </div>
+        </div>
+      </section>
+    ))
+  }
+
+  <section class="section section--tight">
+    <div class="container">
+      <CtaBand lang={lang} title={fr ? 'Votre secteur n’est pas listé ?' : 'Your industry isn’t listed?'} text={fr ? 'Nous intervenons dans tous les environnements professionnels. Parlons de vos besoins.' : 'We work in every type of business environment. Let’s talk about your needs.'} primaryLabel={ui.cta.contactUs} primaryHref={path('contact', lang)} />
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .jump {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    list-style: none;
+    margin: 2rem 0 0;
+    padding: 0;
+  }
+  .jump a {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.45rem 0.85rem;
+    border-radius: var(--radius-pill);
+    background: rgb(255 255 255 / 0.08);
+    border: 1px solid rgb(255 255 255 / 0.16);
+    color: #e6edf7;
+    font-size: var(--fs-sm);
+    font-weight: 500;
+    text-decoration: none;
+  }
+  .jump a:hover {
+    background: rgb(255 255 255 / 0.16);
+    color: #fff;
+  }
+  .jump :global(svg) {
+    color: var(--green-400);
+  }
+  .sector-media {
+    aspect-ratio: 4 / 3.2;
+    box-shadow: var(--shadow-lg);
+  }
+  .sector-media__icon {
+    position: absolute;
+    left: 1.25rem;
+    top: 1.25rem;
+    display: grid;
+    place-items: center;
+    width: 60px;
+    height: 60px;
+    border-radius: 16px;
+    background: #fff;
+    color: var(--blue-700);
+    box-shadow: var(--shadow);
+  }
+  .challenge {
+    display: flex;
+    gap: 0.75rem;
+    padding: 1rem 1.1rem;
+    margin: 1.25rem 0 1.5rem;
+    border-radius: var(--radius);
+    background: #fff8eb;
+    border: 1px solid #fde4b0;
+    color: #6b4a07;
+  }
+  .challenge :global(svg) {
+    flex: none;
+    margin-top: 3px;
+    color: #c98700;
+  }
+  .challenge p {
+    margin: 0;
+  }
+  .sol-title {
+    font-size: 1.1rem;
+    margin-bottom: 0.9rem;
+  }
+  .standards {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    margin: 1.5rem 0 0;
+    padding: 0.45rem 0.85rem;
+    border-radius: 8px;
+    background: var(--blue-50);
+    color: var(--blue-700);
+    font-size: var(--fs-xs);
+    font-weight: 700;
+  }
+</style>

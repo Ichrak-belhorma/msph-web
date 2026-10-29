@@ -1,0 +1,94 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PageHero from '../components/PageHero.astro';
+import Faq from '../components/Faq.astro';
+import CtaBand from '../components/CtaBand.astro';
+import { faqGroups } from '../data/faq';
+import { path, routes, type Lang } from '../i18n/routes';
+import { t } from '../i18n/ui';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const ui = t(lang);
+const fr = lang === 'fr';
+const groups = faqGroups[lang];
+const allItems = groups.flatMap((g) => g.items);
+const schema = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: allItems.map((i) => ({ '@type': 'Question', name: i.q, acceptedAnswer: { '@type': 'Answer', text: i.a } })),
+};
+---
+
+<BaseLayout
+  lang={lang}
+  title={fr ? 'FAQ — Questions fréquentes sur la lutte antiparasitaire | MSPH' : 'FAQ — Pest control frequently asked questions | MSPH'}
+  description={fr
+    ? 'Délais, tarifs, sécurité des produits, contrats professionnels, garanties : toutes les réponses à vos questions sur nos interventions de dératisation, désinsectisation et désinfection.'
+    : 'Timing, pricing, product safety, business contracts, guarantees: answers to all your questions about our pest control and disinfection services.'}
+  alternates={routes.faq}
+  schema={[schema]}
+>
+  <PageHero
+    lang={lang}
+    eyebrow="FAQ"
+    title={ui.common.faqTitle}
+    lead={fr ? 'Les réponses aux questions que nous posent le plus souvent nos clients professionnels et particuliers.' : 'Answers to the questions our business and residential clients ask most often.'}
+    crumbs={[{ label: ui.nav.faq }]}
+  >
+    <ul class="faq-nav" role="list">
+      {groups.map((g) => <li><a href={`#${g.id}`}>{g.title}</a></li>)}
+    </ul>
+  </PageHero>
+
+  <section class="section">
+    <div class="container container--narrow">
+      {
+        groups.map((g) => (
+          <div class="faq-group" id={g.id}>
+            <h2>{g.title}</h2>
+            <Faq items={g.items} />
+          </div>
+        ))
+      }
+      <div style="margin-top:3.5rem">
+        <CtaBand lang={lang} title={fr ? 'Vous avez une autre question ?' : 'Have another question?'} text={fr ? 'Nos experts vous répondent par téléphone ou par e-mail.' : 'Our experts will answer by phone or email.'} primaryLabel={ui.cta.contactUs} primaryHref={path('contact', lang)} />
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .faq-nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    list-style: none;
+    margin: 1.75rem 0 0;
+    padding: 0;
+  }
+  .faq-nav a {
+    display: inline-block;
+    padding: 0.45rem 0.9rem;
+    border-radius: var(--radius-pill);
+    background: rgb(255 255 255 / 0.08);
+    border: 1px solid rgb(255 255 255 / 0.16);
+    color: #e6edf7;
+    font-size: var(--fs-sm);
+    font-weight: 500;
+    text-decoration: none;
+  }
+  .faq-nav a:hover {
+    background: rgb(255 255 255 / 0.16);
+    color: #fff;
+  }
+  .faq-group + .faq-group {
+    margin-top: 3rem;
+  }
+  .faq-group h2 {
+    font-size: var(--fs-2xl);
+  }
+</style>

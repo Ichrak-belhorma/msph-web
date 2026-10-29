@@ -1,0 +1,283 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PageHero from '../components/PageHero.astro';
+import Icon from '../components/Icon.astro';
+import Img from '../components/Img.astro';
+import CertLogos from '../components/CertLogos.astro';
+import CtaBand from '../components/CtaBand.astro';
+import { site } from '../config/site';
+import { path, routes, type Lang } from '../i18n/routes';
+import { t } from '../i18n/ui';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const ui = t(lang);
+const fr = lang === 'fr';
+const years = new Date().getFullYear() - site.foundedYear;
+
+const values = fr
+  ? [
+      { icon: 'Zap', title: 'Réactivité', text: 'Un nuisible n’attend pas. Nous non plus : intervention sous 24 h et urgences 7j/7.' },
+      { icon: 'Award', title: 'Expertise certifiée', text: 'Des techniciens formés en continu, une entreprise certifiée CEPA / NF EN 16636.' },
+      { icon: 'Handshake', title: 'Transparence', text: 'Diagnostic honnête, devis clair, rapports détaillés : vous savez toujours ce que nous faisons et pourquoi.' },
+      { icon: 'Leaf', title: 'Responsabilité', text: 'Lutte intégrée et raisonnée pour protéger la santé des occupants et l’environnement.' },
+    ]
+  : [
+      { icon: 'Zap', title: 'Responsiveness', text: 'Pests don’t wait. Neither do we: response within 24 h and emergencies 7 days a week.' },
+      { icon: 'Award', title: 'Certified expertise', text: 'Continuously trained technicians and a CEPA / EN 16636 certified company.' },
+      { icon: 'Handshake', title: 'Transparency', text: 'Honest assessments, clear quotes, detailed reports: you always know what we do and why.' },
+      { icon: 'Leaf', title: 'Responsibility', text: 'Integrated pest management to protect occupants’ health and the environment.' },
+    ];
+
+const ipm = fr
+  ? [
+      { icon: 'Search', title: 'Inspecter', text: 'Comprendre l’origine du problème : espèce, foyers, points d’entrée, conditions favorables.' },
+      { icon: 'ShieldPlus', title: 'Prévenir', text: 'Supprimer les causes : obturations, hygiène, stockage, aménagements.' },
+      { icon: 'Target', title: 'Traiter', text: 'Méthodes physiques en priorité, biocides ciblés uniquement si nécessaire.' },
+      { icon: 'Gauge', title: 'Évaluer', text: 'Mesurer l’efficacité, documenter et ajuster le plan dans la durée.' },
+    ]
+  : [
+      { icon: 'Search', title: 'Inspect', text: 'Understand the root cause: species, hotspots, entry points, favourable conditions.' },
+      { icon: 'ShieldPlus', title: 'Prevent', text: 'Remove the causes: proofing, hygiene, storage, layout changes.' },
+      { icon: 'Target', title: 'Treat', text: 'Physical methods first, targeted biocides only when needed.' },
+      { icon: 'Gauge', title: 'Evaluate', text: 'Measure effectiveness, document and adjust the plan over time.' },
+    ];
+---
+
+<BaseLayout
+  lang={lang}
+  title={fr ? 'Qui sommes-nous ? MSPH — MS Pro Hygiène, expert en lutte antiparasitaire' : 'About us — MSPH, MS Pro Hygiène pest control experts'}
+  description={fr
+    ? 'Découvrez MSPH (MS Pro Hygiène) : une entreprise spécialisée dans la lutte antiparasitaire et l’hygiène, certifiée CEPA / NF EN 16636, au service des professionnels et des particuliers.'
+    : 'Meet MSPH (MS Pro Hygiène): a pest control and hygiene specialist, CEPA / EN 16636 certified, serving businesses and homeowners.'}
+  alternates={routes.about}
+>
+  <PageHero
+    lang={lang}
+    eyebrow={ui.nav.aboutUs}
+    title={fr ? 'Des professionnels de l’hygiène au service de votre tranquillité' : 'Hygiene professionals dedicated to your peace of mind'}
+    lead={fr
+      ? 'Depuis sa création, MSPH accompagne entreprises, collectivités et particuliers dans la maîtrise durable des nuisibles, avec une exigence : un travail certifié, efficace et responsable.'
+      : 'Since it was founded, MSPH has helped businesses, public bodies and homeowners control pests for good, with one standard: certified, effective and responsible work.'}
+    image="team"
+    crumbs={[{ label: ui.nav.about }]}
+  />
+
+  <section class="section">
+    <div class="container split">
+      <div class="about-media" data-reveal>
+        <div class="media about-media__main">
+          <Img name="team" lang={lang} sizes="(min-width: 960px) 45vw, 100vw" />
+        </div>
+        <div class="about-media__badge">
+          <strong><span data-count={years}>{years}</span> {fr ? 'ans' : 'years'}</strong>
+          <span>{fr ? 'd’expertise au service de nos clients' : 'of expertise serving our clients'}</span>
+        </div>
+      </div>
+      <div data-reveal>
+        <p class="eyebrow">{fr ? 'Notre histoire' : 'Our story'}</p>
+        <h2>{fr ? 'Une entreprise à taille humaine, des standards européens' : 'A human-sized company with European standards'}</h2>
+        <p class="lead">
+          {
+            fr
+              ? `Fondée en ${site.foundedYear}, MS Pro Hygiène est née d’une conviction : la lutte contre les nuisibles mérite un service aussi rigoureux que réactif.`
+              : `Founded in ${site.foundedYear}, MS Pro Hygiène was born from a belief: pest control deserves a service that is as rigorous as it is responsive.`
+          }
+        </p>
+        <p>
+          {
+            fr
+              ? 'Dératisation, désinsectisation, traitement des punaises de lit, dépigeonnisation, désinfection : nos équipes interviennent chaque jour dans des restaurants, des sites industriels, des entrepôts, des établissements de santé, des immeubles et des logements.'
+              : 'Rodent control, insect control, bed bug treatment, bird control, disinfection: our teams work every day in restaurants, industrial sites, warehouses, healthcare facilities, residential buildings and homes.'
+          }
+        </p>
+        <p>
+          {
+            fr
+              ? 'Notre certification CEPA selon la norme NF EN 16636, délivrée par Bureau Veritas, et notre adhésion à Prosane témoignent de notre engagement pour une profession exigeante, transparente et respectueuse de l’environnement.'
+              : 'Our CEPA certification to EN 16636, awarded by Bureau Veritas, and our membership of Prosane reflect our commitment to a demanding, transparent and environmentally responsible profession.'
+          }
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section--alt">
+    <div class="container">
+      <div class="section-head section-head--center">
+        <p class="eyebrow">{fr ? 'Nos valeurs' : 'Our values'}</p>
+        <h2>{fr ? 'Ce qui nous guide au quotidien' : 'What guides us every day'}</h2>
+      </div>
+      <div class="grid grid--4">
+        {
+          values.map((v, i) => (
+            <div class="value" data-reveal style={`transition-delay:${i * 70}ms`}>
+              <span class="icon-badge">
+                <Icon name={v.icon as 'Zap'} />
+              </span>
+              <h3>{v.title}</h3>
+              <p>{v.text}</p>
+            </div>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <section class="section section--dark">
+    <div class="container">
+      <div class="section-head section-head--center">
+        <p class="eyebrow">{fr ? 'Notre approche' : 'Our approach'}</p>
+        <h2>{fr ? 'La lutte intégrée : efficace et responsable' : 'Integrated pest management: effective and responsible'}</h2>
+        <p>
+          {
+            fr
+              ? 'Conformément à la norme NF EN 16636, nous privilégions une approche globale qui traite les causes et pas seulement les symptômes.'
+              : 'In line with EN 16636, we take a holistic approach that treats causes, not just symptoms.'
+          }
+        </p>
+      </div>
+      <ol class="ipm" role="list">
+        {
+          ipm.map((step, i) => (
+            <li data-reveal style={`transition-delay:${i * 80}ms`}>
+              <span class="ipm__icon">
+                <Icon name={step.icon as 'Search'} size={26} />
+              </span>
+              <h3>{step.title}</h3>
+              <p>{step.text}</p>
+            </li>
+          ))
+        }
+      </ol>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container split split--reverse">
+      <div class="media about-team" data-reveal>
+        <Img name="teamWork" lang={lang} sizes="(min-width: 960px) 45vw, 100vw" />
+      </div>
+      <div data-reveal>
+        <p class="eyebrow">{fr ? 'Notre équipe' : 'Our team'}</p>
+        <h2>{fr ? 'Des techniciens formés, certifiés et engagés' : 'Trained, certified and committed technicians'}</h2>
+        <ul class="check-list" role="list">
+          <li>{fr ? 'Certibiocide pour tous les applicateurs' : 'Certibiocide certificate for all applicators'}</li>
+          <li>{fr ? 'Formation continue aux nouvelles méthodes et réglementations' : 'Ongoing training in new methods and regulations'}</li>
+          <li>{fr ? 'Habilitations travail en hauteur et équipements de protection' : 'Work-at-height qualifications and protective equipment'}</li>
+          <li>{fr ? 'Sens du service, ponctualité et discrétion' : 'Customer focus, punctuality and discretion'}</li>
+        </ul>
+        <div class="btn-row" style="margin-top:2rem">
+          <a href={path('careers', lang)} class="btn btn--primary">{fr ? 'Rejoindre l’équipe' : 'Join the team'}<Icon name="ArrowRight" /></a>
+          <a href={path('certifications', lang)} class="btn btn--outline">{ui.nav.certifications}</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section--alt section--tight">
+    <div class="container about-certs" data-reveal>
+      <p class="eyebrow">{ui.footer.certifiedBy}</p>
+      <CertLogos />
+    </div>
+  </section>
+
+  <section class="section section--tight">
+    <div class="container">
+      <CtaBand lang={lang} title={fr ? 'Travaillons ensemble' : 'Let’s work together'} text={fr ? 'Parlez-nous de votre projet ou de votre problème : nous vous répondons rapidement.' : 'Tell us about your project or problem: we’ll get back to you quickly.'} />
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .about-media {
+    position: relative;
+    padding-bottom: 2rem;
+  }
+  .about-media__main {
+    aspect-ratio: 4 / 3.6;
+    box-shadow: var(--shadow-lg);
+  }
+  .about-media__badge {
+    position: absolute;
+    right: 1.25rem;
+    bottom: 0;
+    display: flex;
+    flex-direction: column;
+    max-width: 220px;
+    padding: 1.25rem 1.5rem;
+    border-radius: var(--radius);
+    background: var(--green-600);
+    color: #e9fbf1;
+    box-shadow: var(--shadow-lg);
+    font-size: var(--fs-sm);
+    line-height: 1.4;
+  }
+  .about-media__badge strong {
+    font-family: var(--font-display);
+    font-size: 2.25rem;
+    line-height: 1.1;
+    color: #fff;
+  }
+  .value {
+    padding: 1.75rem;
+    border-radius: var(--radius-lg);
+    background: #fff;
+    border: 1px solid var(--color-border);
+  }
+  .value h3 {
+    font-size: 1.15rem;
+    margin: 1rem 0 0.4rem;
+  }
+  .value p {
+    margin: 0;
+    font-size: var(--fs-sm);
+    color: var(--ink-600);
+  }
+  .ipm {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 230px), 1fr));
+    gap: 1.25rem;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .ipm li {
+    padding: 1.75rem 1.5rem;
+    border-radius: var(--radius-lg);
+    background: rgb(255 255 255 / 0.04);
+    border: 1px solid rgb(255 255 255 / 0.1);
+    text-align: center;
+  }
+  .ipm__icon {
+    display: inline-grid;
+    place-items: center;
+    width: 64px;
+    height: 64px;
+    margin-bottom: 1rem;
+    border-radius: 50%;
+    background: rgb(52 196 122 / 0.15);
+    color: var(--green-400);
+  }
+  .ipm h3 {
+    font-size: 1.2rem;
+  }
+  .ipm p {
+    margin: 0;
+    font-size: var(--fs-sm);
+    color: #b9c7db;
+  }
+  .about-team {
+    aspect-ratio: 4 / 3.2;
+    box-shadow: var(--shadow-lg);
+  }
+  .about-certs {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+</style>

@@ -1,0 +1,199 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Breadcrumbs from '../components/Breadcrumbs.astro';
+import LeadForm from '../components/LeadForm.astro';
+import Icon from '../components/Icon.astro';
+import CertLogos from '../components/CertLogos.astro';
+import { site } from '../config/site';
+import { routes, type Lang } from '../i18n/routes';
+import { t } from '../i18n/ui';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const ui = t(lang);
+const fr = lang === 'fr';
+
+const next = fr
+  ? [
+      { title: 'Rappel sous 2 h ouvrées', text: 'Un expert analyse votre demande et vous rappelle pour préciser votre besoin.' },
+      { title: 'Diagnostic gratuit', text: 'Si nécessaire, un technicien se déplace pour inspecter les lieux.' },
+      { title: 'Devis détaillé', text: 'Vous recevez un devis ferme, clair et sans engagement.' },
+    ]
+  : [
+      { title: 'Callback within 2 business hours', text: 'An expert reviews your request and calls you back to clarify your needs.' },
+      { title: 'Free assessment', text: 'If needed, a technician visits to inspect the premises.' },
+      { title: 'Detailed quote', text: 'You receive a fixed, clear, no-obligation quote.' },
+    ];
+---
+
+<BaseLayout
+  lang={lang}
+  title={fr ? 'Devis et diagnostic gratuits — Lutte antiparasitaire | MSPH' : 'Free quote and assessment — Pest control | MSPH'}
+  description={fr
+    ? 'Demandez votre diagnostic et votre devis gratuits pour une dératisation, désinsectisation, désinfection ou un contrat professionnel. Réponse sous 2 h ouvrées, sans engagement.'
+    : 'Request your free assessment and quote for rodent control, insect control, disinfection or a business contract. Reply within 2 business hours, no commitment.'}
+  alternates={routes.quote}
+  hideMobileBar
+>
+  <section class="quote-page">
+    <div class="container quote-grid">
+      <div class="quote-main">
+        <div class="on-dark quote-intro">
+          <Breadcrumbs lang={lang} items={[{ label: ui.cta.quote }]} />
+          <h1>{fr ? 'Votre diagnostic gratuit en 2 minutes' : 'Your free assessment in 2 minutes'}</h1>
+          <p>{fr ? 'Décrivez votre situation : un expert MSPH vous rappelle rapidement avec une solution adaptée.' : 'Describe your situation: an MSPH expert will call you back quickly with a tailored solution.'}</p>
+        </div>
+        <LeadForm lang={lang} variant="quote" id="form-quote" />
+      </div>
+
+      <aside class="quote-aside">
+        <div class="aside-card">
+          <p class="aside-card__title">{fr ? 'Et ensuite ?' : 'What happens next?'}</p>
+          <ol class="next" role="list">
+            {
+              next.map((n, i) => (
+                <li>
+                  <span class="next__num">{i + 1}</span>
+                  <span>
+                    <strong>{n.title}</strong>
+                    {n.text}
+                  </span>
+                </li>
+              ))
+            }
+          </ol>
+        </div>
+        <a href={`tel:${site.contact.phoneIntl}`} class="aside-call">
+          <span class="icon-badge"><Icon name="PhoneCall" /></span>
+          <span>
+            <small>{fr ? 'Urgence ? Appelez directement' : 'Emergency? Call us directly'}</small>
+            <strong>{site.contact.phone}</strong>
+          </span>
+        </a>
+        <div class="aside-card">
+          <p class="aside-card__title">{ui.footer.certifiedBy}</p>
+          <CertLogos compact />
+          <ul class="check-list aside-checks" role="list">
+            {ui.form.reassurance.map((r) => <li>{r}</li>)}
+          </ul>
+        </div>
+      </aside>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .quote-page {
+    background:
+      linear-gradient(180deg, var(--navy-900) 0, var(--navy-800) 340px, var(--paper-alt) 340px);
+    padding-bottom: var(--section-y);
+  }
+  .quote-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 2rem;
+    padding-top: clamp(2rem, 1.5rem + 2vw, 3.5rem);
+  }
+  @media (min-width: 1000px) {
+    .quote-grid {
+      grid-template-columns: minmax(0, 1fr) 360px;
+      gap: 3rem;
+    }
+    .quote-aside {
+      padding-top: 15rem;
+    }
+  }
+  .quote-intro {
+    color: #c9d6e8;
+    margin-bottom: 2rem;
+  }
+  .quote-intro h1 {
+    color: #fff;
+    font-size: var(--fs-3xl);
+  }
+  .quote-aside {
+    display: grid;
+    gap: 1rem;
+    align-content: start;
+  }
+  .aside-card {
+    padding: 1.5rem;
+    border-radius: var(--radius-lg);
+    background: #fff;
+    border: 1px solid var(--color-border);
+  }
+  .aside-card__title {
+    margin: 0 0 1rem;
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: 1.15rem;
+    color: var(--navy-900);
+  }
+  .next {
+    display: grid;
+    gap: 1rem;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .next li {
+    display: flex;
+    gap: 0.85rem;
+    font-size: var(--fs-sm);
+    color: var(--ink-600);
+  }
+  .next strong {
+    display: block;
+    color: var(--navy-900);
+    font-family: var(--font-display);
+  }
+  .next__num {
+    display: grid;
+    place-items: center;
+    flex: none;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background: var(--green-100);
+    color: var(--green-700);
+    font-weight: 800;
+    font-family: var(--font-display);
+  }
+  .aside-call {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1.25rem 1.5rem;
+    border-radius: var(--radius-lg);
+    background: linear-gradient(120deg, var(--navy-800), var(--blue-700));
+    color: #fff;
+    text-decoration: none;
+  }
+  .aside-call:hover {
+    color: #fff;
+  }
+  .aside-call .icon-badge {
+    background: var(--green-600);
+    color: #fff;
+  }
+  .aside-call small {
+    display: block;
+    color: #b9c7db;
+    font-size: var(--fs-xs);
+  }
+  .aside-call strong {
+    font-family: var(--font-display);
+    font-size: 1.4rem;
+  }
+  .aside-card :global(.certs li) {
+    background: var(--paper-alt);
+  }
+  .aside-checks {
+    margin-top: 1.25rem;
+    font-size: var(--fs-sm);
+    font-weight: 600;
+  }
+</style>

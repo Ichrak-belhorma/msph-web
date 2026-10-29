@@ -1,0 +1,67 @@
+---
+/**
+ * Logos des certifications et affiliations.
+ * Remplacer les fichiers de /public/brand/certs/ par les versions haute définition fournies par les organismes.
+ */
+interface Props {
+  compact?: boolean;
+  class?: string;
+}
+
+const { compact = false, class: className } = Astro.props;
+
+const logos = [
+  { src: '/brand/certs/cepa-certified.webp', alt: 'CEPA Certified — Professional, Sustainable, Reliable', w: 336, h: 138 },
+  { src: '/brand/certs/en16636-bureau-veritas.webp', alt: 'Certification NF EN 16636 — Bureau Veritas Certification', w: 336, h: 153 },
+  { src: '/brand/certs/prosane-80-ans.webp', alt: 'Prosane — 80 ans', w: 261, h: 252 },
+];
+---
+
+<ul class:list={['certs', { 'certs--compact': compact }, className]} role="list">
+  {
+    logos.map((l) => (
+      <li>
+        <img src={l.src} alt={l.alt} width={l.w} height={l.h} loading="lazy" decoding="async" />
+      </li>
+    ))
+  }
+</ul>
+
+<style>
+  .certs {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.75rem;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .certs li {
+    display: grid;
+    place-items: center;
+    height: 84px;
+    padding: 0.6rem 1rem;
+    background: #fff;
+    border-radius: 12px;
+    border: 1px solid var(--color-border);
+  }
+  .certs img {
+    height: 58px;
+    width: auto;
+  }
+  .certs li:last-child img {
+    height: 66px;
+  }
+  .certs--compact li {
+    height: 60px;
+    padding: 0.4rem 0.6rem;
+    border: 0;
+  }
+  .certs--compact img {
+    height: 42px;
+  }
+  .certs--compact li:last-child img {
+    height: 48px;
+  }
+</style>

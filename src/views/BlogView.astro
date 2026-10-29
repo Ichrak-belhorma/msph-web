@@ -1,0 +1,41 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PageHero from '../components/PageHero.astro';
+import ArticleCard from '../components/ArticleCard.astro';
+import { sortedArticles } from '../data/articles';
+import { routes, type Lang } from '../i18n/routes';
+import { t } from '../i18n/ui';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const ui = t(lang);
+const fr = lang === 'fr';
+const list = sortedArticles();
+---
+
+<BaseLayout
+  lang={lang}
+  title={fr ? 'Conseils d’experts — Nuisibles, hygiène et prévention | MSPH' : 'Expert insights — Pests, hygiene and prevention | MSPH'}
+  description={fr
+    ? 'Nos conseils pour reconnaître, prévenir et traiter les nuisibles : rongeurs, punaises de lit, cafards, réglementation HACCP pour les professionnels.'
+    : 'Our advice on recognising, preventing and treating pests: rodents, bed bugs, cockroaches, HACCP regulations for businesses.'}
+  alternates={routes.blog}
+>
+  <PageHero
+    lang={lang}
+    eyebrow={ui.nav.blog}
+    title={fr ? 'Conseils d’experts' : 'Expert insights'}
+    lead={fr ? 'Prévention, réglementation, bons réflexes : les conseils de nos techniciens pour garder des locaux sains.' : 'Prevention, regulations, best practice: our technicians’ advice for keeping premises healthy.'}
+    crumbs={[{ label: ui.nav.blog }]}
+  />
+  <section class="section">
+    <div class="container">
+      <div class="grid grid--3">
+        {list.map((a) => <ArticleCard article={a} lang={lang} />)}
+      </div>
+    </div>
+  </section>
+</BaseLayout>

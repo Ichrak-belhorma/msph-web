@@ -1,0 +1,416 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PageHero from '../components/PageHero.astro';
+import LeadForm from '../components/LeadForm.astro';
+import Icon from '../components/Icon.astro';
+import Img from '../components/Img.astro';
+import ProcessSteps from '../components/ProcessSteps.astro';
+import Faq from '../components/Faq.astro';
+import CtaBand from '../components/CtaBand.astro';
+import { sectors } from '../data/sectors';
+import { faqGroups } from '../data/faq';
+import { path, routes, type Lang } from '../i18n/routes';
+import { t } from '../i18n/ui';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const ui = t(lang);
+const fr = lang === 'fr';
+
+const pillars = fr
+  ? [
+      { icon: 'ClipboardCheck', title: 'Conformité réglementaire', text: 'Plans de maîtrise conformes au Paquet hygiène, HACCP, IFS, BRCGS, FSSC 22000 et à la norme NF EN 16636.' },
+      { icon: 'FileText', title: 'Traçabilité digitale', text: 'Rapports d’intervention, plans de pose, relevés et fiches de sécurité centralisés et disponibles à tout moment.' },
+      { icon: 'Zap', title: 'Réactivité garantie', text: 'Interventions curatives incluses dans le contrat, sous 24 h et 7j/7 en cas d’urgence.' },
+      { icon: 'Headset', title: 'Interlocuteur dédié', text: 'Un responsable de compte unique qui connaît vos sites, vos contraintes et vos équipes.' },
+    ]
+  : [
+      { icon: 'ClipboardCheck', title: 'Regulatory compliance', text: 'Pest management plans compliant with EU food hygiene rules, HACCP, IFS, BRCGS, FSSC 22000 and EN 16636.' },
+      { icon: 'FileText', title: 'Digital traceability', text: 'Service reports, device maps, records and safety sheets centralised and available at any time.' },
+      { icon: 'Zap', title: 'Guaranteed responsiveness', text: 'Call-outs included in the contract, within 24 h and 7 days a week in emergencies.' },
+      { icon: 'Headset', title: 'Dedicated contact', text: 'A single account manager who knows your sites, constraints and teams.' },
+    ];
+
+const plans = fr
+  ? [
+      {
+        name: 'Essentiel',
+        tagline: 'Pour les petits commerces et bureaux',
+        features: ['Audit initial et plan de pose', '4 visites de contrôle par an', 'Rongeurs (rats, souris)', 'Rapport après chaque visite', 'Registre de traçabilité'],
+      },
+      {
+        name: 'Sérénité',
+        tagline: 'Pour la restauration et les métiers de bouche',
+        featured: true,
+        features: ['Tout le contenu Essentiel', '6 à 8 visites par an', 'Rongeurs + insectes rampants', 'Interventions curatives incluses', 'Interventions hors horaires de service', 'Accompagnement lors des contrôles'],
+      },
+      {
+        name: 'Sur mesure',
+        tagline: 'Pour l’industrie, la logistique et les multi-sites',
+        features: ['Tout le contenu Sérénité', 'Jusqu’à 12 visites par an et plus', 'Insectes volants (désinsectiseurs UV)', 'Pièges connectés et analyse de tendances', 'Préparation des audits IFS / BRCGS', 'Reporting multi-sites consolidé'],
+      },
+    ]
+  : [
+      {
+        name: 'Essential',
+        tagline: 'For small shops and offices',
+        features: ['Initial audit and device map', '4 inspection visits a year', 'Rodents (rats, mice)', 'Report after every visit', 'Traceability log'],
+      },
+      {
+        name: 'Peace of mind',
+        tagline: 'For food service and food retail',
+        featured: true,
+        features: ['Everything in Essential', '6 to 8 visits a year', 'Rodents + crawling insects', 'Call-outs included', 'Visits outside service hours', 'Support during inspections'],
+      },
+      {
+        name: 'Tailored',
+        tagline: 'For industry, logistics and multi-site businesses',
+        features: ['Everything in Peace of mind', 'Up to 12+ visits a year', 'Flying insects (UV fly killers)', 'Connected traps and trend analysis', 'IFS / BRCGS audit preparation', 'Consolidated multi-site reporting'],
+      },
+    ];
+
+const steps = fr
+  ? [
+      { title: 'Audit gratuit sur site', text: 'Analyse des risques, des accès, des zones sensibles et de l’historique.' },
+      { title: 'Proposition sur mesure', text: 'Plan de maîtrise, fréquence des visites, dispositifs et devis détaillé.' },
+      { title: 'Mise en place', text: 'Installation des dispositifs numérotés et remise du dossier de traçabilité.' },
+      { title: 'Visites & rapports', text: 'Contrôles périodiques, actions correctives et rapports après chaque visite.' },
+      { title: 'Revue annuelle', text: 'Bilan, analyse de tendances et ajustement du plan selon les résultats.' },
+    ]
+  : [
+      { title: 'Free on-site audit', text: 'Analysis of risks, access points, sensitive areas and history.' },
+      { title: 'Tailored proposal', text: 'Pest management plan, visit frequency, devices and detailed quote.' },
+      { title: 'Set-up', text: 'Installation of numbered devices and handover of the traceability file.' },
+      { title: 'Visits & reports', text: 'Periodic inspections, corrective actions and a report after every visit.' },
+      { title: 'Annual review', text: 'Review, trend analysis and plan adjustments based on results.' },
+    ];
+
+const standards = ['HACCP', 'Règlement (CE) 852/2004', 'IFS Food', 'BRCGS', 'FSSC 22000', 'NF EN 16636', 'CEPA Certified', 'Certibiocide'];
+---
+
+<BaseLayout
+  lang={lang}
+  title={fr ? 'Lutte antiparasitaire pour entreprises et collectivités — Contrats HACCP | MSPH' : 'Commercial pest control for businesses and public bodies — HACCP contracts | MSPH'}
+  description={fr
+    ? 'Contrats de dératisation, désinsectisation et désinfection pour professionnels : plans de maîtrise conformes HACCP, IFS, BRCGS, rapports digitaux, interlocuteur dédié. Audit gratuit.'
+    : 'Rodent, insect control and disinfection contracts for businesses: HACCP, IFS and BRCGS-compliant plans, digital reports, dedicated contact. Free audit.'}
+  alternates={routes.business}
+>
+  <PageHero
+    lang={lang}
+    eyebrow={fr ? 'Entreprises & collectivités' : 'Businesses & public bodies'}
+    title={fr ? 'Protégez votre activité avec un plan de maîtrise des nuisibles sur mesure' : 'Protect your business with a tailored pest management plan'}
+    lead={fr
+      ? 'Restauration, agroalimentaire, santé, logistique, habitat collectif : MSPH accompagne les professionnels avec des contrats de prévention conformes, une traçabilité complète et une réactivité sans faille.'
+      : 'Food service, food manufacturing, healthcare, logistics, housing: MSPH supports professionals with compliant prevention contracts, full traceability and outstanding responsiveness.'}
+    image="handshake"
+    withAside
+    crumbs={[{ label: ui.nav.business }]}
+  >
+    <ul class="check-list hero-list" role="list">
+      <li>{fr ? 'Audit de site gratuit et sans engagement' : 'Free, no-obligation site audit'}</li>
+      <li>{fr ? 'Curatif inclus dans les contrats' : 'Call-outs included in contracts'}</li>
+      <li>{fr ? 'Dossier prêt pour vos contrôles et audits' : 'File ready for inspections and audits'}</li>
+    </ul>
+    <LeadForm
+      slot="aside"
+      lang={lang}
+      variant="hero"
+      id="form-business"
+      defaultPest="contract"
+      title={fr ? 'Audit gratuit de votre site' : 'Free site audit'}
+      subtitle={fr ? 'Un expert vous rappelle sous 2 h ouvrées' : 'An expert will call you back within 2 business hours'}
+    />
+  </PageHero>
+
+  <section class="section">
+    <div class="container">
+      <div class="section-head section-head--center">
+        <p class="eyebrow">{fr ? 'Notre engagement' : 'Our commitment'}</p>
+        <h2>{fr ? 'Un partenaire, pas seulement un prestataire' : 'A partner, not just a contractor'}</h2>
+        <p>{fr ? 'Nous prenons en charge la maîtrise des nuisibles pour que vous puissiez vous concentrer sur votre métier.' : 'We take care of pest management so you can focus on your business.'}</p>
+      </div>
+      <div class="grid grid--4">
+        {
+          pillars.map((p, i) => (
+            <div class="pillar" data-reveal style={`transition-delay:${i * 70}ms`}>
+              <span class="icon-badge">
+                <Icon name={p.icon as 'Zap'} />
+              </span>
+              <h3>{p.title}</h3>
+              <p>{p.text}</p>
+            </div>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <section class="section section--alt" id="contrats">
+    <div class="container">
+      <div class="section-head section-head--center">
+        <p class="eyebrow">{fr ? 'Nos formules' : 'Our plans'}</p>
+        <h2>{fr ? 'Des contrats adaptés à votre niveau de risque' : 'Contracts matched to your level of risk'}</h2>
+        <p>{fr ? 'Chaque contrat est dimensionné après un audit gratuit de votre site. Tarifs sur devis.' : 'Each contract is sized after a free site audit. Pricing on quotation.'}</p>
+      </div>
+      <div class="plans">
+        {
+          plans.map((plan) => (
+            <article class:list={['plan', { 'plan--featured': plan.featured }]} data-reveal>
+              {plan.featured && <span class="plan__badge">{fr ? 'Le plus choisi' : 'Most popular'}</span>}
+              <h3>{plan.name}</h3>
+              <p class="plan__tagline">{plan.tagline}</p>
+              <p class="plan__price">{fr ? 'Sur devis' : 'On quotation'}</p>
+              <ul class="check-list" role="list">
+                {plan.features.map((f) => (
+                  <li>{f}</li>
+                ))}
+              </ul>
+              <a href={path('quote', lang)} class:list={['btn', 'btn--block', plan.featured ? 'btn--cta' : 'btn--outline']}>
+                {ui.cta.audit}
+              </a>
+            </article>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container split">
+      <div class="biz-media media" data-reveal>
+        <Img name="warehouse" lang={lang} sizes="(min-width: 960px) 45vw, 100vw" />
+      </div>
+      <div data-reveal>
+        <p class="eyebrow">{fr ? 'Conformité & audits' : 'Compliance & audits'}</p>
+        <h2>{fr ? 'Soyez prêt pour chaque contrôle sanitaire et audit client' : 'Be ready for every health inspection and customer audit'}</h2>
+        <p class="lead">
+          {
+            fr
+              ? 'Nos dossiers de traçabilité répondent aux exigences des services vétérinaires (DDPP), des référentiels qualité et de vos clients donneurs d’ordre.'
+              : 'Our traceability files meet the requirements of health inspectors, quality standards and your customers.'
+          }
+        </p>
+        <ul class="check-list" role="list">
+          <li>{fr ? 'Plan de pose numéroté des dispositifs' : 'Numbered device map'}</li>
+          <li>{fr ? 'Rapports d’intervention signés et horodatés' : 'Signed, time-stamped service reports'}</li>
+          <li>{fr ? 'Fiches techniques et fiches de données de sécurité' : 'Technical and safety data sheets'}</li>
+          <li>{fr ? 'Analyse de tendances et recommandations' : 'Trend analysis and recommendations'}</li>
+          <li>{fr ? 'Attestations Certibiocide et certificat CEPA' : 'Certibiocide certificates and CEPA certificate'}</li>
+        </ul>
+        <ul class="standards" role="list">
+          {standards.map((s) => <li>{s}</li>)}
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section--dark">
+    <div class="container">
+      <div class="section-head section-head--center">
+        <p class="eyebrow">{fr ? 'Mise en place' : 'Getting started'}</p>
+        <h2>{fr ? 'Votre contrat en 5 étapes' : 'Your contract in 5 steps'}</h2>
+      </div>
+      <ProcessSteps steps={steps} dark />
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="section-head section-head--split">
+        <div>
+          <p class="eyebrow">{ui.nav.sectors}</p>
+          <h2>{fr ? 'Nous connaissons les contraintes de votre secteur' : 'We know your industry’s constraints'}</h2>
+        </div>
+        <a href={path('sectors', lang)} class="btn btn--outline">{fr ? 'Tous les secteurs' : 'All industries'}<Icon name="ArrowRight" /></a>
+      </div>
+      <ul class="sector-links" role="list">
+        {
+          sectors.map((s) => (
+            <li>
+              <a href={`${path('sectors', lang)}#${s.id}`}>
+                <span class="icon-badge">
+                  <Icon name={s.icon} />
+                </span>
+                <span>
+                  <strong>{s[lang].title}</strong>
+                  <small>{s[lang].short}</small>
+                </span>
+                <Icon name="ChevronRight" size={18} class="sector-links__chev" />
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+
+  <section class="section section--alt">
+    <div class="container container--narrow">
+      <div class="section-head section-head--center">
+        <p class="eyebrow">FAQ</p>
+        <h2>{fr ? 'Questions des professionnels' : 'Questions from businesses'}</h2>
+      </div>
+      <Faq items={faqGroups[lang][1].items} schema />
+      <div style="margin-top:3rem">
+        <CtaBand lang={lang} title={fr ? 'Planifions votre audit gratuit' : 'Let’s schedule your free audit'} text={fr ? 'Un expert se déplace sur votre site et vous remet une proposition détaillée.' : 'An expert visits your site and provides a detailed proposal.'} primaryLabel={ui.cta.audit} />
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .hero-list {
+    margin-top: 1.75rem;
+    color: #e6edf7;
+    font-weight: 500;
+  }
+  .pillar {
+    padding: 1.75rem;
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--color-border);
+    background: #fff;
+    box-shadow: var(--shadow-sm);
+  }
+  .pillar h3 {
+    font-size: 1.15rem;
+    margin: 1rem 0 0.4rem;
+  }
+  .pillar p {
+    margin: 0;
+    font-size: var(--fs-sm);
+    color: var(--ink-600);
+  }
+
+  .plans {
+    display: grid;
+    gap: 1.5rem;
+    align-items: stretch;
+  }
+  @media (min-width: 900px) {
+    .plans {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+  .plan {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    padding: 2rem 1.75rem;
+    background: #fff;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-sm);
+  }
+  .plan .check-list {
+    flex: 1;
+    margin-bottom: 1.75rem;
+    font-size: var(--fs-sm);
+  }
+  .plan--featured {
+    border: 2px solid var(--green-500);
+    box-shadow: var(--shadow-lg);
+  }
+  @media (min-width: 900px) {
+    .plan--featured {
+      transform: translateY(-12px);
+    }
+  }
+  .plan__badge {
+    position: absolute;
+    top: -14px;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 0.35rem 0.9rem;
+    border-radius: var(--radius-pill);
+    background: var(--green-600);
+    color: #fff;
+    font-size: var(--fs-xs);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    white-space: nowrap;
+  }
+  .plan h3 {
+    font-size: 1.5rem;
+    margin-bottom: 0.25rem;
+  }
+  .plan__tagline {
+    color: var(--ink-600);
+    font-size: var(--fs-sm);
+  }
+  .plan__price {
+    margin: 0 0 1.5rem;
+    padding-bottom: 1.25rem;
+    border-bottom: 1px solid var(--color-border);
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: 1.6rem;
+    color: var(--blue-700);
+  }
+
+  .biz-media {
+    aspect-ratio: 4 / 3.6;
+    box-shadow: var(--shadow-lg);
+  }
+  .standards {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    list-style: none;
+    margin: 1.75rem 0 0;
+    padding: 0;
+  }
+  .standards li {
+    padding: 0.4rem 0.8rem;
+    border-radius: 8px;
+    background: var(--blue-50);
+    color: var(--blue-700);
+    font-size: var(--fs-xs);
+    font-weight: 700;
+  }
+
+  .sector-links {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 260px), 1fr));
+    gap: 0.75rem;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .sector-links a {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    height: 100%;
+    padding: 1rem 1.1rem;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius);
+    background: #fff;
+    color: inherit;
+    text-decoration: none;
+    transition:
+      border-color 0.2s,
+      box-shadow 0.2s;
+  }
+  .sector-links a:hover {
+    border-color: var(--blue-100);
+    box-shadow: var(--shadow);
+  }
+  .sector-links strong {
+    display: block;
+    font-family: var(--font-display);
+    color: var(--navy-900);
+  }
+  .sector-links small {
+    color: var(--ink-500);
+  }
+  .sector-links :global(.sector-links__chev) {
+    margin-left: auto;
+    flex: none;
+    color: var(--ink-500);
+  }
+</style>

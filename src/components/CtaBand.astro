@@ -1,0 +1,72 @@
+---
+import Icon from './Icon.astro';
+import { site } from '../config/site';
+import { path, type Lang } from '../i18n/routes';
+import { t } from '../i18n/ui';
+
+interface Props {
+  lang: Lang;
+  title: string;
+  text?: string;
+  primaryLabel?: string;
+  primaryHref?: string;
+}
+
+const { lang, title, text, primaryLabel, primaryHref } = Astro.props;
+const ui = t(lang);
+---
+
+<div class="cta-band on-dark" data-reveal>
+  <div class="cta-band__text">
+    <p class="cta-band__title">{title}</p>
+    {text && <p>{text}</p>}
+  </div>
+  <div class="btn-row">
+    <a href={primaryHref ?? path('quote', lang)} class="btn btn--cta btn--lg">{primaryLabel ?? ui.cta.quoteLong}<Icon name="ArrowRight" /></a>
+    <a href={`tel:${site.contact.phoneIntl}`} class="btn btn--ghost-light btn--lg"><Icon name="Phone" />{site.contact.phone}</a>
+  </div>
+</div>
+
+<style>
+  .cta-band {
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1.5rem 2rem;
+    padding: clamp(1.75rem, 1.25rem + 2vw, 3rem);
+    border-radius: var(--radius-lg);
+    background:
+      radial-gradient(circle at 100% 0%, rgb(52 196 122 / 0.25), transparent 40%),
+      linear-gradient(120deg, var(--navy-900), var(--blue-700));
+    color: #c9d6e8;
+  }
+  .cta-band::after {
+    content: '';
+    position: absolute;
+    right: -60px;
+    bottom: -80px;
+    width: 280px;
+    height: 200px;
+    background: url('/brand/msph-emblem.svg') center / contain no-repeat;
+    opacity: 0.06;
+    filter: brightness(10);
+    pointer-events: none;
+  }
+  .cta-band__text {
+    max-width: 640px;
+  }
+  .cta-band__title {
+    margin: 0 0 0.4rem;
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: var(--fs-2xl);
+    line-height: 1.2;
+    color: #fff;
+  }
+  .cta-band p:last-child {
+    margin-bottom: 0;
+  }
+</style>

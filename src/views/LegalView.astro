@@ -1,0 +1,99 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PageHero from '../components/PageHero.astro';
+import { site } from '../config/site';
+import { images } from '../data/images';
+import { path, routes, type Lang } from '../i18n/routes';
+import { t } from '../i18n/ui';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const ui = t(lang);
+const fr = lang === 'fr';
+const L = site.legal;
+const credits = [...new Set(Object.values(images).map((i) => i.credit).filter(Boolean))].join(', ');
+---
+
+<BaseLayout lang={lang} title={fr ? 'Mentions légales | MSPH' : 'Legal notice | MSPH'} description={fr ? 'Mentions légales du site MSPH — MS Pro Hygiène.' : 'Legal notice for the MSPH — MS Pro Hygiène website.'} alternates={routes.legal} noindex>
+  <PageHero lang={lang} title={ui.footer.legal} crumbs={[{ label: ui.footer.legal }]} />
+  <section class="section">
+    <div class="container container--narrow prose">
+      {
+        fr ? (
+          <>
+            <p>Conformément aux articles 6-III et 19 de la loi n° 2004-575 du 21 juin 2004 pour la confiance dans l’économie numérique (LCEN), les informations suivantes sont portées à la connaissance des utilisateurs du site.</p>
+            <h2>Éditeur du site</h2>
+            <table>
+              <tbody>
+                <tr><th>Raison sociale</th><td>{site.legalName}</td></tr>
+                <tr><th>Nom commercial</th><td>{site.name} — {site.brand}</td></tr>
+                <tr><th>Forme juridique</th><td>{L.form} au capital de {L.capital}</td></tr>
+                <tr><th>Siège social</th><td>{site.address.street}, {site.address.postalCode} {site.address.city}, {site.address.country}</td></tr>
+                <tr><th>SIREN / SIRET</th><td>{L.siren} / {L.siret}</td></tr>
+                <tr><th>RCS</th><td>{L.rcs}</td></tr>
+                <tr><th>N° TVA intracommunautaire</th><td>{L.vat}</td></tr>
+                <tr><th>Directeur de la publication</th><td>{L.director}</td></tr>
+                <tr><th>Téléphone</th><td>{site.contact.phone}</td></tr>
+                <tr><th>E-mail</th><td><a href={`mailto:${site.contact.email}`}>{site.contact.email}</a></td></tr>
+                <tr><th>Agrément biocides</th><td>{L.certibiocide}</td></tr>
+                <tr><th>Assurance professionnelle</th><td>{L.insurer}</td></tr>
+              </tbody>
+            </table>
+            <h2>Hébergement</h2>
+            <p>{L.host}</p>
+            <h2>Propriété intellectuelle</h2>
+            <p>L’ensemble des éléments du site (textes, logos, marques, graphismes, structure) est la propriété exclusive de {site.legalName} ou de ses partenaires, et est protégé par le droit de la propriété intellectuelle. Toute reproduction, représentation ou adaptation, totale ou partielle, sans autorisation écrite préalable est interdite.</p>
+            <p>Les logos CEPA Certified, Bureau Veritas Certification et Prosane appartiennent à leurs titulaires respectifs et sont reproduits au titre des certifications et adhésions détenues par l’entreprise.</p>
+            <h2>Crédits photographiques</h2>
+            <p>Certaines photographies proviennent de la banque d’images Pexels (licence Pexels) : {credits}.</p>
+            <h2>Responsabilité</h2>
+            <p>{site.legalName} s’efforce d’assurer l’exactitude des informations diffusées sur ce site, sans pouvoir en garantir l’exhaustivité. Les informations présentées ont un caractère général et ne sauraient remplacer un diagnostic réalisé sur site par un technicien. Les liens hypertextes vers d’autres sites n’engagent pas la responsabilité de l’éditeur.</p>
+            <h2>Données personnelles</h2>
+            <p>Le traitement des données personnelles collectées via ce site est décrit dans notre <a href={path('privacy', lang)}>politique de confidentialité</a>.</p>
+            <h2>Médiation de la consommation</h2>
+            <p>Conformément aux articles L.611-1 et suivants du Code de la consommation, le client consommateur peut recourir gratuitement à un médiateur de la consommation en cas de litige : [nom et coordonnées du médiateur — à compléter].</p>
+            <h2>Droit applicable</h2>
+            <p>Le présent site et les présentes mentions sont régis par le droit français. Tout litige relève de la compétence des tribunaux français.</p>
+          </>
+        ) : (
+          <>
+            <p>In accordance with French law no. 2004-575 of 21 June 2004 on confidence in the digital economy (LCEN), the following information is provided to users of this website.</p>
+            <h2>Website publisher</h2>
+            <table>
+              <tbody>
+                <tr><th>Company name</th><td>{site.legalName}</td></tr>
+                <tr><th>Trading name</th><td>{site.name} — {site.brand}</td></tr>
+                <tr><th>Legal form</th><td>{L.form}, share capital {L.capital}</td></tr>
+                <tr><th>Registered office</th><td>{site.address.street}, {site.address.postalCode} {site.address.city}, {site.address.country}</td></tr>
+                <tr><th>SIREN / SIRET</th><td>{L.siren} / {L.siret}</td></tr>
+                <tr><th>Trade register</th><td>{L.rcs}</td></tr>
+                <tr><th>VAT number</th><td>{L.vat}</td></tr>
+                <tr><th>Publication director</th><td>{L.director}</td></tr>
+                <tr><th>Phone</th><td>{site.contact.phone}</td></tr>
+                <tr><th>Email</th><td><a href={`mailto:${site.contact.email}`}>{site.contact.email}</a></td></tr>
+                <tr><th>Biocide approval</th><td>{L.certibiocide}</td></tr>
+                <tr><th>Professional insurance</th><td>{L.insurer}</td></tr>
+              </tbody>
+            </table>
+            <h2>Hosting</h2>
+            <p>{L.host}</p>
+            <h2>Intellectual property</h2>
+            <p>All content on this website (text, logos, trademarks, graphics, structure) is the exclusive property of {site.legalName} or its partners and is protected by intellectual property law. Any reproduction, representation or adaptation, in whole or in part, without prior written permission is prohibited.</p>
+            <p>The CEPA Certified, Bureau Veritas Certification and Prosane logos belong to their respective owners and are reproduced in respect of the certifications and memberships held by the company.</p>
+            <h2>Photo credits</h2>
+            <p>Some photographs come from the Pexels image library (Pexels licence): {credits}.</p>
+            <h2>Liability</h2>
+            <p>{site.legalName} strives to ensure the accuracy of the information on this website but cannot guarantee that it is complete. The information provided is general and cannot replace an on-site assessment by a technician. Links to other websites do not engage the publisher’s liability.</p>
+            <h2>Personal data</h2>
+            <p>The processing of personal data collected through this website is described in our <a href={path('privacy', lang)}>privacy policy</a>.</p>
+            <h2>Governing law</h2>
+            <p>This website and this notice are governed by French law. Any dispute falls under the jurisdiction of the French courts.</p>
+          </>
+        )
+      }
+    </div>
+  </section>
+</BaseLayout>

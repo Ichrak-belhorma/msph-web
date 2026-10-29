@@ -1,0 +1,27 @@
+---
+import * as icons from 'lucide-static';
+
+export type IconName = Exclude<keyof typeof icons, 'default'>;
+
+interface Props {
+  name: IconName;
+  size?: number;
+  class?: string;
+  strokeWidth?: number;
+  label?: string;
+}
+
+const { name, size = 24, class: className = '', strokeWidth, label } = Astro.props;
+const raw = (icons as unknown as Record<string, string>)[name];
+if (!raw) throw new Error(`Icône Lucide introuvable : ${name}`);
+
+const a11y = label ? `role="img" aria-label="${label}"` : 'aria-hidden="true" focusable="false"';
+let svg = raw
+  .replace(/<!--[\s\S]*?-->/, '')
+  .replace('class="lucide', `${a11y} class="icon ${className} lucide`)
+  .replace('width="24"', `width="${size}"`)
+  .replace('height="24"', `height="${size}"`);
+if (strokeWidth) svg = svg.replace('stroke-width="2"', `stroke-width="${strokeWidth}"`);
+---
+
+<Fragment set:html={svg.trim()} />

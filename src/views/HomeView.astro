@@ -1,0 +1,890 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Icon from '../components/Icon.astro';
+import Img from '../components/Img.astro';
+import LeadForm from '../components/LeadForm.astro';
+import ServiceCard from '../components/ServiceCard.astro';
+import ProcessSteps from '../components/ProcessSteps.astro';
+import Testimonials from '../components/Testimonials.astro';
+import CertLogos from '../components/CertLogos.astro';
+import Faq from '../components/Faq.astro';
+import ArticleCard from '../components/ArticleCard.astro';
+import { site } from '../config/site';
+import { services } from '../data/services';
+import { sectors } from '../data/sectors';
+import { faqGroups } from '../data/faq';
+import { sortedArticles } from '../data/articles';
+import { showTestimonials } from '../data/testimonials';
+import { path, routes, type Lang } from '../i18n/routes';
+import { t } from '../i18n/ui';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const ui = t(lang);
+const fr = lang === 'fr';
+const years = new Date().getFullYear() - site.foundedYear;
+
+const copy = fr
+  ? {
+      title: 'MSPH — Dératisation, désinsectisation & désinfection | Entreprises et particuliers',
+      description:
+        'MS Pro Hygiène (MSPH) : lutte antiparasitaire certifiée CEPA / NF EN 16636. Dératisation, cafards, punaises de lit, guêpes, pigeons, désinfection. Diagnostic gratuit, intervention sous 24 h.',
+      badge: 'Certifié CEPA · NF EN 16636 · Bureau Veritas',
+      h1a: 'Nuisibles éliminés',
+      h1b: 'Activité protégée',
+      lead: 'Dératisation, désinsectisation, punaises de lit, désinfection : MSPH protège les entreprises, les collectivités et les particuliers avec des techniciens certifiés et une intervention sous 24 h.',
+      checks: [
+        'Diagnostic et devis 100 % gratuits',
+        'Techniciens certifiés Certibiocide',
+        'Plans de maîtrise conformes HACCP',
+        'Résultat garanti, suivi inclus',
+      ],
+      urgent: 'Urgence ? Un technicien vous répond',
+    }
+  : {
+      title: 'MSPH — Pest control, disinfection & hygiene | Businesses and homeowners',
+      description:
+        'MS Pro Hygiène (MSPH): CEPA / EN 16636 certified pest control. Rats, cockroaches, bed bugs, wasps, pigeons, disinfection. Free assessment, response within 24 h.',
+      badge: 'CEPA certified · EN 16636 · Bureau Veritas',
+      h1a: 'Pests eliminated',
+      h1b: 'Your business protected',
+      lead: 'Rodent control, insect control, bed bugs, disinfection: MSPH protects businesses, public bodies and homeowners with certified technicians and a response within 24 hours.',
+      checks: ['100% free assessment and quote', 'Certified technicians', 'HACCP-compliant pest management plans', 'Guaranteed results, follow-up included'],
+      urgent: 'Emergency? A technician will answer',
+    };
+
+const stats = [
+  { value: 24, suffix: ' h', label: fr ? 'Délai d’intervention' : 'Response time' },
+  { value: 7, suffix: fr ? 'j/7' : '/7', label: fr ? 'Urgences traitées' : 'Emergency service' },
+  { value: 100, suffix: ' %', label: fr ? 'Techniciens certifiés' : 'Certified technicians' },
+  { value: years, suffix: fr ? ' ans' : ' yrs', label: fr ? 'D’expertise terrain' : 'Of field expertise' },
+];
+
+const b2bFeatures = fr
+  ? [
+      { icon: 'ClipboardCheck', title: 'Conformité garantie', text: 'Plans de maîtrise conformes HACCP, IFS, BRCGS et NF EN 16636.' },
+      { icon: 'FileText', title: 'Traçabilité complète', text: 'Plans de pose, rapports d’intervention et registre prêts pour vos audits.' },
+      { icon: 'CalendarClock', title: 'Zéro interruption', text: 'Interventions planifiées tôt le matin, le soir ou le week-end.' },
+      { icon: 'Headset', title: 'Interlocuteur dédié', text: 'Un responsable de compte unique, y compris pour vos multi-sites.' },
+    ]
+  : [
+      { icon: 'ClipboardCheck', title: 'Guaranteed compliance', text: 'Pest management plans compliant with HACCP, IFS, BRCGS and EN 16636.' },
+      { icon: 'FileText', title: 'Full traceability', text: 'Device maps, service reports and logs ready for your audits.' },
+      { icon: 'CalendarClock', title: 'Zero disruption', text: 'Visits scheduled early morning, evening or at weekends.' },
+      { icon: 'Headset', title: 'Dedicated contact', text: 'A single account manager, including for multi-site businesses.' },
+    ];
+
+const steps = fr
+  ? [
+      { title: 'Diagnostic gratuit', text: 'Un technicien inspecte les lieux, identifie le nuisible, l’ampleur de l’infestation et les causes.' },
+      { title: 'Plan d’action & devis', text: 'Vous recevez une solution adaptée et un devis clair, ferme et sans engagement sous 24 h.' },
+      { title: 'Intervention certifiée', text: 'Traitement ciblé avec des produits homologués, en toute sécurité pour vos équipes et vos clients.' },
+      { title: 'Suivi & garantie', text: 'Rapport d’intervention, passage de contrôle et conseils de prévention pour un résultat durable.' },
+    ]
+  : [
+      { title: 'Free assessment', text: 'A technician inspects the premises, identifies the pest, the extent of the infestation and its causes.' },
+      { title: 'Action plan & quote', text: 'You receive a tailored solution and a clear, fixed, no-obligation quote within 24 hours.' },
+      { title: 'Certified treatment', text: 'Targeted treatment with approved products, safe for your staff and customers.' },
+      { title: 'Follow-up & guarantee', text: 'Service report, follow-up visit and prevention advice for lasting results.' },
+    ];
+
+const reasons = fr
+  ? [
+      { icon: 'Award', title: 'Certifiés CEPA / NF EN 16636', text: 'Le standard européen de qualité de la lutte antiparasitaire, audité par Bureau Veritas.' },
+      { icon: 'Zap', title: 'Réactivité 7j/7', text: 'Intervention sous 24 h, et le jour même pour les urgences.' },
+      { icon: 'Leaf', title: 'Lutte intégrée & raisonnée', text: 'Prévention d’abord, biocides seulement si nécessaire, pour protéger les personnes et l’environnement.' },
+      { icon: 'ShieldCheck', title: 'Résultat garanti', text: 'Passages de contrôle inclus et nouvelle intervention sans frais si nécessaire.' },
+      { icon: 'EyeOff', title: 'Discrétion totale', text: 'Véhicules banalisés sur demande et techniciens formés au contact client.' },
+      { icon: 'Users', title: 'Membre de Prosane', text: 'Adhérent de l’organisation professionnelle du secteur, engagé pour un métier responsable.' },
+    ]
+  : [
+      { icon: 'Award', title: 'CEPA / EN 16636 certified', text: 'The European quality standard for pest management, audited by Bureau Veritas.' },
+      { icon: 'Zap', title: '7-day responsiveness', text: 'Response within 24 hours, same day for emergencies.' },
+      { icon: 'Leaf', title: 'Integrated pest management', text: 'Prevention first, biocides only when needed, to protect people and the environment.' },
+      { icon: 'ShieldCheck', title: 'Guaranteed results', text: 'Follow-up visits included and a free return visit if needed.' },
+      { icon: 'EyeOff', title: 'Complete discretion', text: 'Unmarked vehicles on request and customer-focused technicians.' },
+      { icon: 'Users', title: 'Prosane member', text: 'Member of the industry’s professional body, committed to a responsible profession.' },
+    ];
+
+const homeFaq = faqGroups[lang][0].items.slice(0, 3).concat(faqGroups[lang][1].items.slice(0, 2));
+const latest = sortedArticles().slice(0, 3);
+---
+
+<BaseLayout lang={lang} title={copy.title} description={copy.description} alternates={routes.home}>
+  <!-- ============ HERO ============ -->
+  <section class="hero on-dark">
+    <div class="hero__bg" aria-hidden="true">
+      <Img name="hero" lang={lang} sizes="100vw" width={1600} eager alt="" />
+    </div>
+    <div class="container hero__inner">
+      <div class="hero__intro">
+        <p class="hero__badge"><Icon name="ShieldCheck" size={18} /> {copy.badge}</p>
+        <h1>{copy.h1a}<span class="hero__dot">.</span> <span class="hero__hl">{copy.h1b}<span class="hero__dot">.</span></span></h1>
+        <p class="hero__lead">{copy.lead}</p>
+      </div>
+      <div class="hero__form">
+        <LeadForm lang={lang} variant="hero" />
+      </div>
+      <div class="hero__extra">
+        <ul class="check-list hero__checks" role="list">
+          {copy.checks.map((c) => <li>{c}</li>)}
+        </ul>
+        <a href={`tel:${site.contact.phoneIntl}`} class="hero__call">
+          <span class="hero__call-icon"><Icon name="PhoneCall" size={22} /></span>
+          <span>
+            <small>{copy.urgent}</small>
+            <strong>{site.contact.phone}</strong>
+          </span>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ CHIFFRES & CERTIFICATIONS ============ -->
+  <section class="trust" aria-label={fr ? 'Nos garanties' : 'Our guarantees'}>
+    <div class="container">
+      <div class="trust__card">
+        <dl class="trust__stats">
+          {
+            stats.map((s) => (
+              <div class="trust__stat">
+                <dt>{s.label}</dt>
+                <dd>
+                  <span data-count={s.value}>{s.value}</span>{s.suffix}
+                </dd>
+              </div>
+            ))
+          }
+        </dl>
+        <div class="trust__certs">
+          <CertLogos compact />
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ SERVICES ============ -->
+  <section class="section" id="services">
+    <div class="container">
+      <div class="section-head section-head--split">
+        <div>
+          <p class="eyebrow">{fr ? 'Nos expertises' : 'Our expertise'}</p>
+          <h2>{fr ? 'Des solutions pour chaque nuisible' : 'Solutions for every pest'}</h2>
+          <p>
+            {
+              fr
+                ? 'Du diagnostic au suivi, nos techniciens certifiés traitent durablement les infestations et préviennent leur retour.'
+                : 'From assessment to follow-up, our certified technicians treat infestations for good and prevent them from coming back.'
+            }
+          </p>
+        </div>
+        <a href={path('services', lang)} class="btn btn--outline">{ui.nav.allServices}<Icon name="ArrowRight" /></a>
+      </div>
+      <div class="grid grid--3">
+        {services.map((s) => <ServiceCard service={s} lang={lang} />)}
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ B2B ============ -->
+  <section class="section section--alt b2b">
+    <div class="container split">
+      <div class="b2b__visual" data-reveal>
+        <div class="b2b__img media">
+          <Img name="inspection" lang={lang} sizes="(min-width: 960px) 45vw, 100vw" />
+        </div>
+        <div class="b2b__img b2b__img--small media">
+          <Img name="foodFactory" lang={lang} sizes="(min-width: 960px) 22vw, 50vw" width={800} />
+        </div>
+        <div class="b2b__float">
+          <span class="icon-badge icon-badge--green"><Icon name="FileCheck" /></span>
+          <span>
+            <strong>{fr ? 'Rapport d’intervention' : 'Service report'}</strong>
+            <small>{fr ? 'Conforme HACCP · envoyé après chaque visite' : 'HACCP compliant · sent after every visit'}</small>
+          </span>
+        </div>
+      </div>
+      <div data-reveal>
+        <p class="eyebrow">{fr ? 'Entreprises & collectivités' : 'Businesses & public bodies'}</p>
+        <h2>{fr ? 'Votre partenaire hygiène pour protéger votre activité, votre conformité et votre image' : 'Your hygiene partner to protect your operations, compliance and reputation'}</h2>
+        <p class="lead">
+          {
+            fr
+              ? 'Contrats de prévention sur mesure, visites périodiques, interventions curatives incluses : nous construisons avec vous un plan de maîtrise des nuisibles adapté à vos risques et à vos obligations.'
+              : 'Tailored prevention contracts, periodic visits, call-outs included: we build a pest management plan with you, matched to your risks and obligations.'
+          }
+        </p>
+        <ul class="feature-list" role="list">
+          {
+            b2bFeatures.map((f) => (
+              <li>
+                <span class="icon-badge">
+                  <Icon name={f.icon as 'FileText'} />
+                </span>
+                <span>
+                  <strong>{f.title}</strong>
+                  {f.text}
+                </span>
+              </li>
+            ))
+          }
+        </ul>
+        <div class="btn-row">
+          <a href={path('quote', lang)} class="btn btn--cta btn--lg">{ui.cta.audit}</a>
+          <a href={path('business', lang)} class="btn btn--outline btn--lg">{fr ? 'L’offre entreprises' : 'Business offer'}<Icon name="ArrowRight" /></a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ SECTEURS ============ -->
+  <section class="section">
+    <div class="container">
+      <div class="section-head section-head--center">
+        <p class="eyebrow">{fr ? 'Secteurs d’activité' : 'Industries'}</p>
+        <h2>{fr ? 'Une expertise adaptée à votre métier' : 'Expertise tailored to your industry'}</h2>
+        <p>{fr ? 'Chaque secteur a ses contraintes réglementaires et opérationnelles. Nous les connaissons.' : 'Every industry has its own regulatory and operational constraints. We know them.'}</p>
+      </div>
+      <ul class="sectors" role="list">
+        {
+          sectors.map((s, i) => (
+            <li data-reveal style={`transition-delay:${(i % 4) * 60}ms`}>
+              <a href={`${path('sectors', lang)}#${s.id}`} class="sector">
+                <span class="sector__img">
+                  <Img name={s.image} lang={lang} sizes="(min-width: 1100px) 300px, (min-width: 600px) 45vw, 100vw" width={800} />
+                </span>
+                <span class="sector__body">
+                  <span class="sector__icon">
+                    <Icon name={s.icon} size={22} />
+                  </span>
+                  <strong>{s[lang].title}</strong>
+                  <small>{s[lang].short}</small>
+                </span>
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+
+  <!-- ============ MÉTHODE ============ -->
+  <section class="section section--dark">
+    <div class="container">
+      <div class="section-head section-head--center">
+        <p class="eyebrow">{fr ? 'Notre méthode' : 'Our method'}</p>
+        <h2>{fr ? 'Simple, rapide et transparent' : 'Simple, fast and transparent'}</h2>
+        <p>{fr ? 'Quatre étapes pour retrouver des locaux sains, durablement.' : 'Four steps to healthy premises, for good.'}</p>
+      </div>
+      <ProcessSteps steps={steps} dark />
+      <div class="center-cta">
+        <a href={path('quote', lang)} class="btn btn--cta btn--lg">{ui.cta.quoteLong}<Icon name="ArrowRight" /></a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ POURQUOI MSPH ============ -->
+  <section class="section">
+    <div class="container">
+      <div class="section-head section-head--center">
+        <p class="eyebrow">{fr ? 'Pourquoi MSPH' : 'Why MSPH'}</p>
+        <h2>{fr ? 'L’exigence d’un professionnel certifié' : 'The standards of a certified professional'}</h2>
+      </div>
+      <div class="grid grid--3">
+        {
+          reasons.map((r, i) => (
+            <div class="reason" data-reveal style={`transition-delay:${(i % 3) * 70}ms`}>
+              <span class="icon-badge">
+                <Icon name={r.icon as 'Award'} />
+              </span>
+              <h3>{r.title}</h3>
+              <p>{r.text}</p>
+            </div>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ PARTICULIERS ============ -->
+  <section class="section section--alt">
+    <div class="container split split--reverse">
+      <div class="home-res__media media" data-reveal>
+        <Img name="technicianHome" lang={lang} sizes="(min-width: 960px) 45vw, 100vw" />
+      </div>
+      <div data-reveal>
+        <p class="eyebrow">{fr ? 'Particuliers' : 'Homeowners'}</p>
+        <h2>{fr ? 'Des nuisibles chez vous ? Nous intervenons rapidement' : 'Pests at home? We respond fast'}</h2>
+        <p class="lead">
+          {
+            fr
+              ? 'Souris dans la cuisine, punaises de lit, nid de frelons sous le toit : nos techniciens interviennent chez vous avec discrétion, en toute sécurité pour votre famille et vos animaux.'
+              : 'Mice in the kitchen, bed bugs, a hornet nest under the roof: our technicians come to your home discreetly, safely for your family and pets.'
+          }
+        </p>
+        <ul class="check-list" role="list">
+          <li>{fr ? 'Devis gratuit et prix ferme avant intervention' : 'Free quote and fixed price before any work'}</li>
+          <li>{fr ? 'Produits sécurisés pour les enfants et les animaux' : 'Products safe for children and pets'}</li>
+          <li>{fr ? 'Véhicules banalisés sur demande' : 'Unmarked vehicles on request'}</li>
+          <li>{fr ? 'Garantie de résultat' : 'Results guarantee'}</li>
+        </ul>
+        <div class="btn-row" style="margin-top:1.75rem">
+          <a href={`tel:${site.contact.phoneIntl}`} class="btn btn--primary btn--lg"><Icon name="Phone" />{site.contact.phone}</a>
+          <a href={path('residential', lang)} class="btn btn--outline btn--lg">{ui.cta.learnMore}<Icon name="ArrowRight" /></a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ AVIS ============ -->
+  {
+    showTestimonials && (
+      <section class="section">
+        <div class="container">
+          <div class="section-head section-head--center">
+            <p class="eyebrow">{fr ? 'Ils nous font confiance' : 'They trust us'}</p>
+            <h2>{fr ? 'La satisfaction de nos clients' : 'What our clients say'}</h2>
+          </div>
+          <Testimonials lang={lang} />
+        </div>
+      </section>
+    )
+  }
+
+  <!-- ============ CERTIFICATIONS ============ -->
+  <section class="section section--tight section--alt">
+    <div class="container certs-band" data-reveal>
+      <div>
+        <p class="eyebrow">{fr ? 'Qualité certifiée' : 'Certified quality'}</p>
+        <h2 class="certs-band__title">{fr ? 'Certifiés selon la norme européenne NF EN 16636' : 'Certified to the European standard EN 16636'}</h2>
+        <p class="muted">
+          {
+            fr
+              ? 'La certification CEPA, délivrée après audit par Bureau Veritas, garantit des prestations de lutte antiparasitaire professionnelles, durables et fiables.'
+              : 'CEPA certification, awarded after a Bureau Veritas audit, guarantees professional, sustainable and reliable pest management services.'
+          }
+        </p>
+        <a href={path('certifications', lang)} class="link-arrow">{fr ? 'Nos certifications et engagements' : 'Our certifications and commitments'}<Icon name="ArrowRight" /></a>
+      </div>
+      <CertLogos />
+    </div>
+  </section>
+
+  <!-- ============ FAQ ============ -->
+  <section class="section">
+    <div class="container split split--top">
+      <div class="faq-intro">
+        <p class="eyebrow">FAQ</p>
+        <h2>{ui.common.faqTitle}</h2>
+        <p class="lead">{fr ? 'Vous ne trouvez pas votre réponse ? Nos experts vous répondent par téléphone ou par e-mail.' : 'Can’t find your answer? Our experts will help by phone or email.'}</p>
+        <div class="btn-row">
+          <a href={path('faq', lang)} class="btn btn--outline">{fr ? 'Toutes les questions' : 'All questions'}<Icon name="ArrowRight" /></a>
+          <a href={path('contact', lang)} class="btn btn--primary">{ui.cta.contactUs}</a>
+        </div>
+      </div>
+      <Faq items={homeFaq} />
+    </div>
+  </section>
+
+  <!-- ============ CONSEILS ============ -->
+  <section class="section section--alt">
+    <div class="container">
+      <div class="section-head section-head--split">
+        <div>
+          <p class="eyebrow">{ui.nav.blog}</p>
+          <h2>{fr ? 'Conseils d’experts' : 'Expert insights'}</h2>
+        </div>
+        <a href={path('blog', lang)} class="btn btn--outline">{ui.cta.allArticles}<Icon name="ArrowRight" /></a>
+      </div>
+      <div class="grid grid--3">
+        {latest.map((a) => <ArticleCard article={a} lang={lang} />)}
+      </div>
+    </div>
+  </section>
+
+</BaseLayout>
+
+<style>
+  /* ---------- Hero ---------- */
+  .hero {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    background:
+      radial-gradient(circle at 85% 20%, rgb(52 196 122 / 0.18), transparent 35%),
+      linear-gradient(115deg, var(--navy-950) 0%, var(--navy-800) 55%, var(--blue-700) 100%);
+    color: #c9d6e8;
+  }
+  .hero__bg {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+  }
+  .hero__bg :global(img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: 30% center;
+    opacity: 0.38;
+  }
+  .hero__bg::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      linear-gradient(90deg, rgb(4 17 39 / 0.95) 0%, rgb(7 28 61 / 0.78) 50%, rgb(10 42 90 / 0.55) 100%),
+      linear-gradient(0deg, rgb(4 17 39 / 0.6), transparent 40%);
+  }
+  .hero__inner {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas: 'intro' 'form' 'extra';
+    gap: 1.75rem;
+    padding-block: clamp(1.75rem, 1rem + 3vw, 4.5rem) clamp(5rem, 4rem + 3vw, 7rem);
+  }
+  .hero__inner > * {
+    min-width: 0;
+  }
+  .hero__intro {
+    grid-area: intro;
+  }
+  .hero__form {
+    grid-area: form;
+  }
+  .hero__extra {
+    grid-area: extra;
+  }
+  @media (min-width: 1000px) {
+    .hero__inner {
+      grid-template-columns: minmax(0, 1.08fr) minmax(400px, 0.92fr);
+      grid-template-areas: 'intro form' 'extra form';
+      grid-template-rows: auto 1fr;
+      column-gap: clamp(2.5rem, 2rem + 3vw, 5rem);
+      row-gap: 2rem;
+      align-items: start;
+    }
+    .hero__intro {
+      padding-top: 1.5rem;
+    }
+  }
+  .hero__badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 1.25rem;
+    padding: 0.45rem 0.9rem;
+    border-radius: var(--radius-pill);
+    background: rgb(255 255 255 / 0.08);
+    border: 1px solid rgb(255 255 255 / 0.16);
+    font-size: var(--fs-xs);
+    font-weight: 600;
+    color: #e6edf7;
+  }
+  .hero__badge :global(svg) {
+    color: var(--green-400);
+  }
+  .hero h1 {
+    color: #fff;
+    font-size: clamp(2.1rem, 1.4rem + 3.4vw, 4rem);
+    line-height: 1.06;
+    margin-bottom: 1.1rem;
+  }
+  .hero__hl {
+    display: block;
+    background: linear-gradient(90deg, var(--green-400), #7fe0ad);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  .hero__dot {
+    margin-left: -0.1em;
+  }
+  .hero__lead {
+    font-size: var(--fs-lg);
+    max-width: 600px;
+    color: #c9d6e8;
+    margin-bottom: 0;
+  }
+  .hero__checks {
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 0.8rem 1.5rem;
+    color: #e6edf7;
+    font-weight: 500;
+    max-width: 640px;
+  }
+  .hero__call {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.9rem;
+    margin-top: 1.75rem;
+    padding: 0.75rem 1.25rem 0.75rem 0.75rem;
+    border-radius: var(--radius-pill);
+    background: rgb(255 255 255 / 0.07);
+    border: 1px solid rgb(255 255 255 / 0.14);
+    color: #fff;
+    text-decoration: none;
+    transition: background-color 0.2s;
+  }
+  .hero__call:hover {
+    color: #fff;
+    background: rgb(255 255 255 / 0.13);
+  }
+  .hero__call-icon {
+    display: grid;
+    place-items: center;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: var(--green-600);
+  }
+  .hero__call small {
+    display: block;
+    font-size: var(--fs-xs);
+    color: #b9c7db;
+  }
+  .hero__call strong {
+    font-family: var(--font-display);
+    font-size: 1.35rem;
+    letter-spacing: 0.01em;
+  }
+
+  /* ---------- Chiffres ---------- */
+  .trust {
+    position: relative;
+    z-index: 2;
+    margin-top: -3.5rem;
+  }
+  .trust__card {
+    display: grid;
+    gap: 1.5rem;
+    align-items: center;
+    padding: clamp(1.25rem, 1rem + 1vw, 1.75rem) clamp(1.25rem, 1rem + 1.5vw, 2.25rem);
+    background: #fff;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-lg);
+  }
+  @media (min-width: 1100px) {
+    .trust__card {
+      grid-template-columns: 1fr auto;
+      gap: 2.5rem;
+    }
+  }
+  .trust__stats {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.25rem;
+    margin: 0;
+  }
+  @media (min-width: 700px) {
+    .trust__stats {
+      grid-template-columns: repeat(4, 1fr);
+    }
+  }
+  .trust__stat {
+    display: flex;
+    flex-direction: column-reverse;
+    gap: 0.15rem;
+  }
+  .trust__stat + .trust__stat {
+    border-left: 1px solid var(--color-border);
+    padding-left: 1.25rem;
+  }
+  @media (max-width: 699px) {
+    .trust__stat + .trust__stat:nth-child(3) {
+      border-left: 0;
+      padding-left: 0;
+    }
+  }
+  .trust__stat dd {
+    margin: 0;
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: clamp(1.6rem, 1.3rem + 1.2vw, 2.25rem);
+    line-height: 1;
+    color: var(--blue-700);
+  }
+  .trust__stat dt {
+    font-size: var(--fs-xs);
+    font-weight: 600;
+    color: var(--ink-600);
+  }
+  .trust__certs {
+    padding-top: 1.25rem;
+    border-top: 1px solid var(--color-border);
+  }
+  @media (min-width: 1100px) {
+    .trust__certs {
+      padding: 0 0 0 2.5rem;
+      border-top: 0;
+      border-left: 1px solid var(--color-border);
+    }
+  }
+  .trust__certs :global(.certs li) {
+    background: transparent;
+    padding: 0.25rem;
+  }
+
+
+  /* ---------- B2B ---------- */
+  .b2b__visual {
+    position: relative;
+    padding-bottom: 3rem;
+    padding-right: 3rem;
+  }
+  .b2b__img {
+    aspect-ratio: 4 / 3.4;
+    box-shadow: var(--shadow-lg);
+  }
+  .b2b__img--small {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    width: 46%;
+    aspect-ratio: 1;
+    border: 6px solid #fff;
+  }
+  .b2b__float {
+    position: absolute;
+    left: -0.5rem;
+    bottom: 1.25rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    max-width: 290px;
+    padding: 0.9rem 1.1rem;
+    background: #fff;
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-lg);
+  }
+  .b2b__float strong {
+    display: block;
+    font-family: var(--font-display);
+    color: var(--navy-900);
+    font-size: 0.98rem;
+  }
+  .b2b__float small {
+    display: block;
+    font-size: 0.8rem;
+    color: var(--ink-500);
+    line-height: 1.4;
+  }
+  @media (max-width: 599px) {
+    .b2b__visual {
+      padding-right: 1.5rem;
+    }
+    .b2b__float {
+      left: 0.5rem;
+      bottom: 0;
+      right: 2rem;
+    }
+    .b2b__img--small {
+      display: none;
+    }
+  }
+  .feature-list {
+    display: grid;
+    gap: 1.1rem;
+    list-style: none;
+    margin: 1.75rem 0 2rem;
+    padding: 0;
+  }
+  @media (min-width: 640px) {
+    .feature-list {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+  .feature-list li {
+    display: flex;
+    gap: 0.9rem;
+    align-items: flex-start;
+    font-size: var(--fs-sm);
+    color: var(--ink-600);
+  }
+  .feature-list strong {
+    display: block;
+    font-family: var(--font-display);
+    font-size: 1rem;
+    color: var(--navy-900);
+    margin-bottom: 0.1rem;
+  }
+  .feature-list .icon-badge {
+    width: 46px;
+    height: 46px;
+    background: #fff;
+    border: 1px solid var(--blue-100);
+  }
+  .feature-list .icon-badge :global(svg) {
+    width: 22px;
+    height: 22px;
+  }
+
+  /* ---------- Secteurs ---------- */
+  .sectors {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 260px), 1fr));
+    gap: 1rem;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .sector {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    min-height: 260px;
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    text-decoration: none;
+    color: #fff;
+    isolation: isolate;
+    background: linear-gradient(135deg, var(--navy-800), var(--blue-600));
+  }
+  .sector__img {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+  }
+  .sector__img :global(img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.6s var(--ease);
+  }
+  .sector::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background: linear-gradient(180deg, rgb(7 28 61 / 0.05) 20%, rgb(7 28 61 / 0.92) 100%);
+    transition: background-color 0.3s;
+  }
+  .sector:hover {
+    color: #fff;
+  }
+  .sector:hover .sector__img :global(img) {
+    transform: scale(1.06);
+  }
+  .sector__body {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+    padding: 1.25rem;
+  }
+  .sector__icon {
+    display: grid;
+    place-items: center;
+    width: 42px;
+    height: 42px;
+    margin-bottom: 0.4rem;
+    border-radius: 12px;
+    background: rgb(255 255 255 / 0.16);
+    backdrop-filter: blur(6px);
+  }
+  .sector strong {
+    font-family: var(--font-display);
+    font-size: 1.1rem;
+    line-height: 1.25;
+  }
+  .sector small {
+    font-size: 0.85rem;
+    color: #d6e0ee;
+    line-height: 1.45;
+  }
+  @media (max-width: 599px) {
+    .sectors {
+      grid-template-columns: 1fr 1fr;
+      gap: 0.75rem;
+    }
+    .sector {
+      min-height: 168px;
+    }
+    .sector__body {
+      padding: 0.9rem;
+    }
+    .sector strong {
+      font-size: 0.95rem;
+    }
+    .sector small {
+      display: none;
+    }
+    .sector__icon {
+      width: 36px;
+      height: 36px;
+    }
+  }
+
+  .center-cta {
+    display: flex;
+    justify-content: center;
+    margin-top: 2.5rem;
+  }
+
+  /* ---------- Raisons ---------- */
+  .reason {
+    padding: 1.75rem;
+    border-radius: var(--radius-lg);
+    background: var(--paper-alt);
+    border: 1px solid transparent;
+    transition:
+      border-color 0.25s,
+      background-color 0.25s,
+      box-shadow 0.25s;
+  }
+  .reason:hover {
+    background: #fff;
+    border-color: var(--blue-100);
+    box-shadow: var(--shadow);
+  }
+  .reason .icon-badge {
+    margin-bottom: 1rem;
+    background: #fff;
+  }
+  .reason h3 {
+    font-size: 1.15rem;
+    margin-bottom: 0.4rem;
+  }
+  .reason p {
+    margin: 0;
+    font-size: var(--fs-sm);
+    color: var(--ink-600);
+  }
+
+  .home-res__media {
+    aspect-ratio: 4 / 3;
+    box-shadow: var(--shadow-lg);
+  }
+
+  /* ---------- Certifications ---------- */
+  .certs-band {
+    display: grid;
+    gap: 2rem;
+    align-items: center;
+  }
+  @media (min-width: 960px) {
+    .certs-band {
+      grid-template-columns: 1fr auto;
+      gap: 4rem;
+    }
+  }
+  .certs-band__title {
+    font-size: var(--fs-2xl);
+  }
+
+  .split--top {
+    align-items: start;
+  }
+  @media (min-width: 960px) {
+    .split--top {
+      grid-template-columns: 0.8fr 1.2fr;
+    }
+    .faq-intro {
+      position: sticky;
+      top: calc(var(--header-h) + 2rem);
+    }
+  }
+</style>

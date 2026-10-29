@@ -1,0 +1,223 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PageHero from '../components/PageHero.astro';
+import Icon from '../components/Icon.astro';
+import Img from '../components/Img.astro';
+import { site } from '../config/site';
+import { path, routes, type Lang } from '../i18n/routes';
+import { t } from '../i18n/ui';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const ui = t(lang);
+const fr = lang === 'fr';
+
+const perks = fr
+  ? [
+      { icon: 'GraduationCap', title: 'Formation complète', text: 'Certibiocide financé, formations techniques et sécurité tout au long de votre parcours.' },
+      { icon: 'Truck', title: 'Véhicule & équipement', text: 'Véhicule de service, matériel professionnel et EPI fournis.' },
+      { icon: 'TrendingUp', title: 'Évolution', text: 'Une entreprise en croissance qui fait évoluer ses talents vers plus de responsabilités.' },
+      { icon: 'HeartHandshake', title: 'Esprit d’équipe', text: 'Une équipe soudée, à l’écoute, où chacun compte.' },
+    ]
+  : [
+      { icon: 'GraduationCap', title: 'Full training', text: 'Funded Certibiocide certificate, technical and safety training throughout your career.' },
+      { icon: 'Truck', title: 'Vehicle & equipment', text: 'Company vehicle, professional equipment and PPE provided.' },
+      { icon: 'TrendingUp', title: 'Career growth', text: 'A growing company that helps its people take on more responsibility.' },
+      { icon: 'HeartHandshake', title: 'Team spirit', text: 'A close-knit, supportive team where everyone matters.' },
+    ];
+
+// Offres d'emploi — À CONFIRMER / mettre à jour selon les recrutements en cours.
+const jobs = fr
+  ? [
+      {
+        title: 'Technicien(ne) applicateur(trice) hygiéniste H/F',
+        type: 'CDI · Temps plein',
+        text: 'Vous réalisez les interventions de dératisation, désinsectisation et désinfection chez nos clients professionnels et particuliers, et assurez le suivi des contrats.',
+        reqs: ['Permis B indispensable', 'Certibiocide apprécié (formation possible)', 'Rigueur, autonomie, sens du service'],
+      },
+      {
+        title: 'Chargé(e) d’affaires B2B H/F',
+        type: 'CDI · Temps plein',
+        text: 'Vous développez notre portefeuille de clients professionnels (restauration, industrie, syndics, collectivités) et construisez des offres sur mesure.',
+        reqs: ['Expérience commerciale B2B', 'Connaissance du secteur hygiène appréciée', 'Aisance relationnelle et goût du terrain'],
+      },
+    ]
+  : [
+      {
+        title: 'Pest control technician (M/F)',
+        type: 'Permanent · Full time',
+        text: 'You carry out rodent control, insect control and disinfection treatments for our business and residential clients, and follow up on contracts.',
+        reqs: ['Driving licence required', 'Certibiocide a plus (training available)', 'Rigour, autonomy, customer focus'],
+      },
+      {
+        title: 'B2B account manager (M/F)',
+        type: 'Permanent · Full time',
+        text: 'You grow our portfolio of business clients (food service, industry, property managers, public bodies) and build tailored offers.',
+        reqs: ['B2B sales experience', 'Knowledge of the hygiene sector a plus', 'Strong people skills and field focus'],
+      },
+    ];
+
+const mail = (subject: string) => `mailto:${site.contact.careersEmail}?subject=${encodeURIComponent(subject)}`;
+---
+
+<BaseLayout
+  lang={lang}
+  title={fr ? 'Recrutement — Rejoignez MSPH, technicien hygiéniste et métiers de l’hygiène' : 'Careers — Join MSPH, pest control technician and hygiene jobs'}
+  description={fr
+    ? 'MSPH recrute : techniciens applicateurs hygiénistes, chargés d’affaires. Formation Certibiocide, véhicule, évolution. Découvrez nos offres et postulez.'
+    : 'MSPH is hiring: pest control technicians, account managers. Certibiocide training, company vehicle, career growth. See our openings and apply.'}
+  alternates={routes.careers}
+>
+  <PageHero
+    lang={lang}
+    eyebrow={ui.nav.careers}
+    title={fr ? 'Rejoignez une équipe qui protège la santé de tous' : 'Join a team that protects everyone’s health'}
+    lead={fr
+      ? 'Un métier de terrain, utile et varié. Nous recherchons des personnes rigoureuses et motivées, débutantes ou expérimentées.'
+      : 'A varied, useful, hands-on job. We are looking for rigorous, motivated people, whether beginners or experienced.'}
+    image="teamWork"
+    crumbs={[{ label: ui.nav.about, href: path('about', lang) }, { label: ui.nav.careers }]}
+  >
+    <a href="#offres" class="btn btn--cta btn--lg" style="margin-top:1.75rem">{fr ? 'Voir les offres' : 'See openings'}<Icon name="ArrowRight" /></a>
+  </PageHero>
+
+  <section class="section">
+    <div class="container">
+      <div class="section-head section-head--center">
+        <p class="eyebrow">{fr ? 'Pourquoi nous rejoindre' : 'Why join us'}</p>
+        <h2>{fr ? 'Ce que nous vous offrons' : 'What we offer'}</h2>
+      </div>
+      <div class="grid grid--4">
+        {
+          perks.map((p) => (
+            <div class="perk" data-reveal>
+              <span class="icon-badge icon-badge--green">
+                <Icon name={p.icon as 'Truck'} />
+              </span>
+              <h3>{p.title}</h3>
+              <p>{p.text}</p>
+            </div>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <section class="section section--alt" id="offres">
+    <div class="container">
+      <div class="section-head">
+        <p class="eyebrow">{fr ? 'Offres en cours' : 'Current openings'}</p>
+        <h2>{fr ? 'Nos postes à pourvoir' : 'Open positions'}</h2>
+      </div>
+      <div class="jobs">
+        {
+          jobs.map((job) => (
+            <article class="job" data-reveal>
+              <div class="job__head">
+                <div>
+                  <h3>{job.title}</h3>
+                  <p class="job__meta">
+                    <span><Icon name="Briefcase" size={16} /> {job.type}</span>
+                    <span><Icon name="MapPin" size={16} /> {site.address.city}</span>
+                  </p>
+                </div>
+                <a href={mail(`${fr ? 'Candidature' : 'Application'} — ${job.title}`)} class="btn btn--cta">{fr ? 'Postuler' : 'Apply'}</a>
+              </div>
+              <p>{job.text}</p>
+              <ul class="check-list" role="list">
+                {job.reqs.map((r) => (
+                  <li>{r}</li>
+                ))}
+              </ul>
+            </article>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container split">
+      <div class="media careers-media" data-reveal>
+        <Img name="technicianSpray" lang={lang} sizes="(min-width: 960px) 45vw, 100vw" />
+      </div>
+      <div data-reveal>
+        <p class="eyebrow">{fr ? 'Candidature spontanée' : 'Speculative application'}</p>
+        <h2>{fr ? 'Aucune offre ne correspond ? Écrivez-nous !' : 'No suitable opening? Write to us!'}</h2>
+        <p class="lead">
+          {
+            fr
+              ? 'Nous sommes toujours à la recherche de nouveaux talents. Envoyez-nous votre CV et quelques mots sur votre motivation.'
+              : 'We are always looking for new talent. Send us your CV and a few words about your motivation.'
+          }
+        </p>
+        <a href={mail(fr ? 'Candidature spontanée' : 'Speculative application')} class="btn btn--primary btn--lg">
+          <Icon name="Send" />
+          {site.contact.careersEmail}
+        </a>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .perk {
+    padding: 1.75rem;
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--color-border);
+  }
+  .perk h3 {
+    font-size: 1.15rem;
+    margin: 1rem 0 0.4rem;
+  }
+  .perk p {
+    margin: 0;
+    font-size: var(--fs-sm);
+    color: var(--ink-600);
+  }
+  .jobs {
+    display: grid;
+    gap: 1.25rem;
+  }
+  .job {
+    padding: clamp(1.5rem, 1.25rem + 1vw, 2.25rem);
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--color-border);
+    background: #fff;
+    box-shadow: var(--shadow-sm);
+  }
+  .job__head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 1rem;
+  }
+  .job h3 {
+    margin-bottom: 0.4rem;
+  }
+  .job__meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin: 0;
+    font-size: var(--fs-sm);
+    color: var(--ink-500);
+  }
+  .job__meta span {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+  }
+  .job > p {
+    color: var(--ink-600);
+  }
+  .careers-media {
+    aspect-ratio: 4 / 3.2;
+    box-shadow: var(--shadow-lg);
+  }
+</style>

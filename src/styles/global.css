@@ -424,6 +424,13 @@ ol {
   width: 100%;
 }
 
+@media (max-width: 479px) {
+  .btn {
+    white-space: normal;
+    text-align: center;
+  }
+}
+
 .btn-row {
   display: flex;
   flex-wrap: wrap;

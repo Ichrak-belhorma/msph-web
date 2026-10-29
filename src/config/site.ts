@@ -86,7 +86,27 @@ export const site = {
     accessKey: '',
   },
 
-  foundedYear: 2015, // À CONFIRMER
+  /** Chiffres clés affichés sur le site (page d'accueil, à propos). */
+  proof: {
+    experienceYears: 30,
+    satisfiedClients: 2500, // À CONFIRMER
+    satisfactionRate: 98, // À CONFIRMER (en %)
+  },
+
+  /**
+   * Avis Trustpilot.
+   * - `rating` et `reviewCount` alimentent le bandeau d'avis (À CONFIRMER avec la note réelle).
+   * - `url` : lien vers votre page Trustpilot (ex. https://fr.trustpilot.com/review/votre-domaine.fr).
+   * - Pour afficher le widget officiel TrustBox à la place des avis du site, renseignez `businessUnitId`
+   *   (fourni par Trustpilot) ; `templateId` correspond par défaut au modèle « Carousel ».
+   */
+  trustpilot: {
+    rating: 4.9, // À CONFIRMER
+    reviewCount: 320, // À CONFIRMER
+    url: '', // À CONFIRMER
+    businessUnitId: '',
+    templateId: '53aa8912dec7e10d38f59f36',
+  },
 };
 
 export type Site = typeof site;

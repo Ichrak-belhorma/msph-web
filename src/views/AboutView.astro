@@ -16,7 +16,8 @@ interface Props {
 const { lang } = Astro.props;
 const ui = t(lang);
 const fr = lang === 'fr';
-const years = new Date().getFullYear() - site.foundedYear;
+const years = site.proof.experienceYears;
+const clients = new Intl.NumberFormat(lang === 'fr' ? 'fr-FR' : 'en-GB').format(site.proof.satisfiedClients).replace(/\u202f/g, '\u00a0');
 
 const values = fr
   ? [
@@ -83,8 +84,8 @@ const ipm = fr
         <p class="lead">
           {
             fr
-              ? `Fondée en ${site.foundedYear}, MS Pro Hygiène est née d’une conviction : la lutte contre les nuisibles mérite un service aussi rigoureux que réactif.`
-              : `Founded in ${site.foundedYear}, MS Pro Hygiène was born from a belief: pest control deserves a service that is as rigorous as it is responsive.`
+              ? `Forte de ${years} ans d’expérience et de plus de ${clients} clients satisfaits, MS Pro Hygiène repose sur une conviction : la lutte contre les nuisibles mérite un service aussi rigoureux que réactif.`
+              : `With ${years} years of experience and more than ${clients} satisfied clients, MS Pro Hygiène is built on one belief: pest control deserves a service that is as rigorous as it is responsive.`
           }
         </p>
         <p>

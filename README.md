@@ -53,12 +53,15 @@ All company details live in **`src/config/site.ts`**. Every value marked `À CON
 3. **Legal** — legal form, share capital, SIREN/SIRET, RCS, VAT number, publication director, biocide approval number, insurer, web host. Also fill in the consumer mediator in `src/views/LegalView.astro`.
 4. **Domain** — `site.url` in `src/config/site.ts`, `SITE_URL` in `astro.config.mjs` and the sitemap URL in `public/robots.txt`.
 5. **Forms** — create a free form on [Formspree](https://formspree.io) or [Web3Forms](https://web3forms.com) and paste the endpoint (and access key for Web3Forms) in `site.form`. Until then, forms open the visitor’s email app with a pre-filled message.
-6. **Testimonials** — `src/data/testimonials.ts` contains **sample reviews**: replace them with real client reviews (with their permission) or set `showTestimonials = false`. Publishing fake reviews is illegal in France.
-7. **Figures** — `foundedYear` drives the “years of expertise” counters.
-8. **Job offers** — update or remove the positions in `src/views/CareersView.astro`.
-9. **Logos** — `src/components/Logo.astro` and `public/brand/` contain a vector redraw of the MSPH logo; replace with the official vector file if available. Replace the certification logos in `public/brand/certs/` with high-resolution versions from CEPA, Bureau Veritas and Prosane.
+6. **Reviews** — `src/data/testimonials.ts` contains **sample reviews** shown in the scrolling review band: replace them with real client reviews (with their permission), or switch to the official Trustpilot widget by filling `site.trustpilot.businessUnitId` (and `url`), or set `showTestimonials = false`. Also set the real Trustpilot `rating` and `reviewCount`. Publishing fake reviews is illegal in France.
+7. **Figures** — `site.proof` holds the years of experience (30), number of satisfied clients and satisfaction rate shown on the home and about pages.
+8. **Client logos** — `src/data/clients.ts` lists client *types* as placeholders for the “Ils nous font confiance” band; replace them with real client logos (with their permission) via the `logo` field.
+9. **Job offers** — update or remove the positions in `src/views/CareersView.astro`.
+10. **Logos** — `src/components/Logo.astro` and `public/brand/` contain a vector redraw of the MSPH logo; replace with the official vector file if available. Replace the certification logos in `public/brand/certs/` with high-resolution versions from CEPA, Bureau Veritas and Prosane.
 
 ## Replacing the photos
+
+The home hero uses the team photo in `public/images/hero-equipe-msph.{webp,jpg}` (desktop, canvas extended on the left so the team sits between the headline and the form) and `public/images/hero-equipe-msph-mobile.{webp,jpg}` (mobile crop).
 
 Placeholder photos are hot-linked from [Pexels](https://www.pexels.com) (free for commercial use). They are all declared in **`src/data/images.ts`**. To use your own photo:
 

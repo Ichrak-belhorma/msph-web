@@ -1,0 +1,44 @@
+---
+/** Étoiles au format Trustpilot (carrés verts, étoile blanche). */
+interface Props {
+  rating?: number;
+  size?: number;
+  label?: string;
+}
+
+const { rating = 5, size = 22, label } = Astro.props;
+const fills = Array.from({ length: 5 }, (_, i) => Math.max(0, Math.min(1, rating - i)));
+const star = 'M12 3.6l2.47 5.36 5.86.68-4.34 4 1.18 5.78L12 16.5l-5.17 2.92 1.18-5.78-4.34-4 5.86-.68z';
+---
+
+<span class="tp-stars" role="img" aria-label={label ?? `${rating}/5`} style={`--tp-size:${size}px`}>
+  {
+    fills.map((f) => (
+      <span class="tp-stars__box" style={`--fill:${f * 100}%`}>
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d={star} />
+        </svg>
+      </span>
+    ))
+  }
+</span>
+
+<style>
+  .tp-stars {
+    display: inline-flex;
+    gap: 2px;
+    vertical-align: middle;
+  }
+  .tp-stars__box {
+    display: grid;
+    place-items: center;
+    width: var(--tp-size);
+    height: var(--tp-size);
+    background: linear-gradient(90deg, #00b67a var(--fill), #dcdce6 var(--fill));
+  }
+  .tp-stars__box svg {
+    width: 82%;
+    height: 82%;
+    fill: #fff;
+  }
+</style>

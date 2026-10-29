@@ -1,0 +1,33 @@
+---
+/** Mention « Trustpilot » (étoile verte + nom), à utiliser avec la note réelle de l'entreprise. */
+interface Props {
+  dark?: boolean;
+}
+
+const { dark = false } = Astro.props;
+---
+
+<span class:list={['tp-logo', { 'tp-logo--dark': dark }]}>
+  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 1.8l2.9 6.9 7.4.6-5.6 4.9 1.7 7.3L12 17.6l-6.4 3.9 1.7-7.3L1.7 9.3l7.4-.6z" /></svg>
+  Trustpilot
+</span>
+
+<style>
+  .tp-logo {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    font-family: var(--font-sans);
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    color: #fff;
+  }
+  .tp-logo svg {
+    width: 1.15em;
+    height: 1.15em;
+    fill: #00b67a;
+  }
+  .tp-logo--dark {
+    color: #191919;
+  }
+</style>

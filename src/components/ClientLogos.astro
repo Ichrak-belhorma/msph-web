@@ -1,0 +1,72 @@
+---
+import Icon from './Icon.astro';
+import Marquee from './Marquee.astro';
+import { clients } from '../data/clients';
+import type { Lang } from '../i18n/routes';
+
+interface Props {
+  lang: Lang;
+  variant?: 'light' | 'dark';
+  duration?: number;
+}
+
+const { lang, variant = 'dark', duration = 45 } = Astro.props;
+---
+
+<Marquee duration={duration} gap="2.75rem" label={lang === 'fr' ? 'Ils nous font confiance' : 'They trust us'} class={`clients clients--${variant}`}>
+  {
+    clients.map((c) => (
+      <span class="client">
+        {c.logo ? (
+          <img src={c.logo} alt={c.name[lang]} loading="lazy" />
+        ) : (
+          <>
+            <Icon name={c.icon} size={24} />
+            <span class="client__name">{c.name[lang]}</span>
+          </>
+        )}
+      </span>
+    ))
+  }
+</Marquee>
+
+<style>
+  .client {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    height: 48px;
+    white-space: nowrap;
+    color: var(--ink-500);
+    transition: color 0.2s;
+  }
+  .client:hover {
+    color: var(--navy-900);
+  }
+  .client img {
+    height: 36px;
+    width: auto;
+    filter: grayscale(1);
+    opacity: 0.75;
+  }
+  .client__name {
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: 1.05rem;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+  }
+  :global(.clients--light) .client {
+    color: rgb(255 255 255 / 0.72);
+    height: 40px;
+  }
+  :global(.clients--light) .client:hover {
+    color: #fff;
+  }
+  :global(.clients--light) .client__name {
+    font-size: 0.85rem;
+  }
+  :global(.clients--light) .client img {
+    filter: brightness(0) invert(1);
+  }
+</style>

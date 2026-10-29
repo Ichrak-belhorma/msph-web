@@ -1,0 +1,225 @@
+---
+import Icon from './Icon.astro';
+import Marquee from './Marquee.astro';
+import TrustpilotStars from './TrustpilotStars.astro';
+import TrustpilotLogo from './TrustpilotLogo.astro';
+import { site } from '../config/site';
+import { testimonials } from '../data/testimonials';
+import { locales, type Lang } from '../i18n/routes';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const fr = lang === 'fr';
+const tp = site.trustpilot;
+const rating = tp.rating.toLocaleString(locales[lang]);
+const count = new Intl.NumberFormat(locales[lang]).format(tp.reviewCount).replace(/ /g, ' ');
+const half = Math.ceil(testimonials.length / 2);
+const rows = [testimonials.slice(0, half), testimonials.slice(half)];
+const date = (d: string) => new Date(d).toLocaleDateString(locales[lang], { day: 'numeric', month: 'short', year: 'numeric' });
+---
+
+<div class="reviews">
+  <div class="container reviews__head">
+    <div>
+      <p class="eyebrow">{fr ? 'Avis clients' : 'Client reviews'}</p>
+      <h2>{fr ? 'Ils parlent de nous mieux que nous' : 'Our clients say it best'}</h2>
+    </div>
+    <a class="tp-summary" href={tp.url || undefined} target={tp.url ? '_blank' : undefined} rel={tp.url ? 'noopener' : undefined}>
+      <span class="tp-summary__score">{fr ? 'Excellent' : 'Excellent'}</span>
+      <TrustpilotStars rating={tp.rating} size={28} label={`${rating}/5`} />
+      <span class="tp-summary__meta">
+        {fr ? `Note ${rating} sur 5 · ${count} avis` : `Rated ${rating} out of 5 · ${count} reviews`}
+      </span>
+      <TrustpilotLogo dark />
+    </a>
+  </div>
+
+  {
+    tp.businessUnitId ? (
+      <div class="container">
+        <div
+          class="trustpilot-widget"
+          data-locale={locales[lang]}
+          data-template-id={tp.templateId}
+          data-businessunit-id={tp.businessUnitId}
+          data-style-height="240px"
+          data-style-width="100%"
+          data-theme="light"
+          data-stars="4,5"
+        >
+          <a href={tp.url} target="_blank" rel="noopener">
+            Trustpilot
+          </a>
+        </div>
+        <script is:inline async src="https://widget.trustpilot.com/bootstrap/v5/tp.widget.bootstrap.min.js" />
+      </div>
+    ) : (
+      <div class="reviews__rows">
+        {rows.map((row, i) => (
+          <Marquee duration={60 + i * 8} reverse={i === 1} gap="1.25rem">
+            {row.map((r) => (
+              <article class="review">
+                <div class="review__top">
+                  <TrustpilotStars rating={r.rating} size={18} />
+                  <time datetime={r.date}>{date(r.date)}</time>
+                </div>
+                <h3 class="review__title">{r.title[lang]}</h3>
+                <p class="review__text">{r.text[lang]}</p>
+                <p class="review__author">
+                  <span class="review__avatar" aria-hidden="true">
+                    {r.name.charAt(0)}
+                  </span>
+                  <span>
+                    <strong>{r.name}</strong>
+                    <small>{r.context[lang]}</small>
+                  </span>
+                </p>
+              </article>
+            ))}
+          </Marquee>
+        ))}
+      </div>
+    )
+  }
+
+  {
+    tp.url && (
+      <p class="container reviews__note">
+        <a href={tp.url} target="_blank" rel="noopener" class="link-arrow">
+          {fr ? 'Voir tous nos avis sur Trustpilot' : 'See all our reviews on Trustpilot'}
+          <Icon name="ArrowRight" />
+        </a>
+      </p>
+    )
+  }
+</div>
+
+<style>
+  .reviews__head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 1.5rem 2rem;
+    margin-bottom: 2.25rem;
+  }
+  .reviews__head h2 {
+    margin: 0;
+  }
+  .tp-summary {
+    display: grid;
+    grid-template-columns: auto auto;
+    align-items: center;
+    gap: 0.4rem 0.9rem;
+    padding: 1rem 1.25rem;
+    border-radius: var(--radius);
+    background: #fff;
+    border: 1px solid var(--color-border);
+    box-shadow: var(--shadow-sm);
+    color: var(--ink-700);
+    text-decoration: none;
+  }
+  a.tp-summary[href]:hover {
+    border-color: #00b67a;
+    color: var(--ink-700);
+  }
+  .tp-summary__score {
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: 1.35rem;
+    color: #191919;
+  }
+  .tp-summary__meta {
+    font-size: var(--fs-sm);
+  }
+  @media (min-width: 600px) {
+    .tp-summary__meta {
+      white-space: nowrap;
+    }
+  }
+  @media (max-width: 599px) {
+    .tp-summary {
+      width: 100%;
+      grid-template-columns: minmax(0, 1fr) auto;
+    }
+  }
+  .reviews__rows {
+    display: grid;
+    gap: 1.25rem;
+  }
+  .review {
+    display: flex;
+    flex-direction: column;
+    width: min(340px, 82vw);
+    padding: 1.35rem 1.4rem;
+    background: #fff;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-sm);
+    white-space: normal;
+  }
+  .review__top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    margin-bottom: 0.85rem;
+  }
+  .review__top time {
+    font-size: var(--fs-xs);
+    color: var(--ink-500);
+  }
+  .review__title {
+    font-size: 1.02rem;
+    margin-bottom: 0.4rem;
+  }
+  .review__text {
+    flex: 1;
+    margin: 0 0 1rem;
+    font-size: var(--fs-sm);
+    line-height: 1.55;
+    color: var(--ink-600);
+  }
+  .review__author {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    margin: 0;
+    padding-top: 0.85rem;
+    border-top: 1px solid var(--color-border);
+    line-height: 1.3;
+  }
+  .review__avatar {
+    display: grid;
+    place-items: center;
+    flex: none;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: var(--blue-50);
+    color: var(--blue-700);
+    font-family: var(--font-display);
+    font-weight: 800;
+  }
+  .review__author strong {
+    display: block;
+    font-size: var(--fs-sm);
+    color: var(--navy-900);
+  }
+  .review__author small {
+    font-size: var(--fs-xs);
+    color: var(--ink-500);
+  }
+  .reviews__note {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+    margin: 1.75rem auto 0;
+    font-size: var(--fs-xs);
+    color: var(--ink-500);
+  }
+</style>
